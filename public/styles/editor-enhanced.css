@@ -1,0 +1,168 @@
+/* styles/editor-enhanced.css */
+.editor-container {
+  font-family: 'Times New Roman', serif;
+  background: #f6f6f6;
+  min-height: 100vh;
+}
+
+.editor-content {
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin: 20px auto;
+  padding: 72px; /* 1 inch margins */
+  width: 8.5in; /* Letter size */
+  min-height: 11in;
+}
+
+/* Table Styling */
+.editor-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.editor-table td,
+.editor-table th {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  min-width: 50px;
+}
+
+.editor-table th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* Chart Styling */
+.editor-chart {
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+  padding: 16px;
+  margin: 1em 0;
+  background: #fafafa;
+}
+
+.chart-placeholder {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* Image Styling */
+.editor-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Link Styling */
+.editor-link {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.editor-link:hover {
+  color: #004499;
+}
+
+/* Task List Styling */
+.editor-task-item {
+  display: flex;
+  align-items: flex-start;
+  margin: 0.5em 0;
+}
+
+.editor-task-item input[type="checkbox"] {
+  margin-right: 8px;
+  margin-top: 0.2em;
+}
+
+/* Floating and Bubble Menus */
+.floating-menu {
+  background: white;
+  border: 1px solid #e1e1e1;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 4px;
+}
+
+.bubble-menu {
+  background: #333;
+  border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Toolbar Styling */
+.toolbar-section {
+  border-right: 1px solid #e1e1e1;
+  padding-right: 8px;
+  margin-right: 8px;
+}
+
+.toolbar-section:last-child {
+  border-right: none;
+}
+
+/* Reading Mode */
+.reading-mode .editor-content {
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: none;
+  font-family: serif;
+  line-height: 1.8;
+}
+
+.reading-mode .toolbar {
+  display: none;
+}
+
+/* Focus Mode */
+.focus-mode .editor-content {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fefefe;
+}
+
+.focus-mode .toolbar {
+  opacity: 0.1;
+  transition: opacity 0.2s;
+}
+
+.focus-mode .toolbar:hover {
+  opacity: 1;
+}
+
+/* Dark Theme */
+.dark-theme .editor-content {
+  background: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.dark-theme .editor-table {
+  border-color: #444;
+}
+
+.dark-theme .editor-table th {
+  background-color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .editor-content {
+    padding: 20px;
+    margin: 10px;
+    width: auto;
+  }
+  
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .toolbar-section {
+    margin-right: 4px;
+    padding-right: 4px;
+  }
+}

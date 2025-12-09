@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  --word-blue: #2B579A;
+  --word-blue-hover: #1e3e70;
+  --word-bg-gray: #f0f0f0;
+  --ribbon-bg: #f3f3f3;
+  --ribbon-border: #d6d6d6;
+  --page-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  @apply bg-[#f0f0f0] overflow-hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Scrollbar styling to match Word's subtle scrollbars if possible, otherwise default is fine for now but let's make it thinner */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Editor Page Simulation */
+.word-page {
+  background: white;
+  box-shadow: var(--page-shadow);
+  margin: 20px auto;
+  min-height: 1123px;
+  /* A4 height at 96 DPI approx */
+  width: 794px;
+  /* A4 width at 96 DPI approx */
+  padding: 96px;
+  /* 1 inch margins approx */
+  outline: none;
+}
+
+/* ProseMirror overrides for the Word look */
+.ProseMirror {
+  outline: none !important;
+  min-height: 100%;
+}
+
+.ProseMirror p {
+  margin-bottom: 0px;
+  /* Word defaults to no margin, handled by line height/spacing */
+  line-height: 1.15;
+}
+
+/* Table Styles */
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  border: 1px solid #000;
+  /* Word tables usually default to black borders when borders are on */
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 0px 5px;
+  /* Tighter padding like Word */
+  position: relative;
+  vertical-align: top;
+}
+
+.ProseMirror .selectedCell {
+  background-color: #d3d3d3;
+  /* Selection color */
+}
+
+/* Page Break Styling */
+.page-break-marker {
+  height: 24px;
+  background: #f0f0f0;
+  /* Match app background color */
+  margin-left: calc(var(--page-margin-left, 96px) * -1);
+  margin-right: calc(var(--page-margin-right, 96px) * -1);
+  width: calc(100% + var(--page-margin-left, 96px) + var(--page-margin-right, 96px));
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  page-break-after: always;
+  /* For printing */
+}
+
+/* Blank Page - Just uses the document's page styling */
+/* In Microsoft Word, a blank page is created by two consecutive page breaks */
+/* The page container (max-w-4xl mx-auto bg-white shadow-lg min-h-[1123px] p-8) handles all styling */
+/* The blank page is simply empty space between page breaks within the same document flow */
+
+/* Video Player Styling */
+.ProseMirror video,
+.ProseMirror .video-player {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ProseMirror video:focus {
+  outline: 2px solid #2B579A;
+  outline-offset: 2px;
+}
+
+/* WordArt Styling */
+.ProseMirror [data-word-art] {
+  display: inline-block;
+  margin: 5px;
+  user-select: none;
+}
