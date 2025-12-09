@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileText, BookOpen, Document, Briefcase, GraduationCap } from "lucide-react";
+import { FileText, BookOpen, File, Briefcase, GraduationCap } from "lucide-react";
 
 interface CoverPageDialogProps {
   open: boolean;
@@ -40,7 +40,7 @@ const coverPageTemplates = [
   {
     id: "report",
     name: "Report",
-    icon: Document,
+    icon: File,
     preview: "Structured report layout",
   },
   {
@@ -162,11 +162,10 @@ export function CoverPageDialog({
                 <button
                   key={template.id}
                   onClick={() => setSelectedTemplate(template.id)}
-                  className={`p-6 border-2 rounded-lg text-left transition-all ${
-                    selectedTemplate === template.id
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-200 hover:border-gray-300 dark:border-gray-700"
-                  }`}
+                  className={`p-6 border-2 rounded-lg text-left transition-all ${selectedTemplate === template.id
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-200 hover:border-gray-300 dark:border-gray-700"
+                    }`}
                 >
                   <div className="flex items-start gap-4">
                     <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">

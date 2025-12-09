@@ -1,4 +1,4 @@
 "use client";
 
-import WordEditor from './WordEditor';
-export default WordEditor;
+import MsWordEditor from './MsWordEditor';
+export default MsWordEditor;

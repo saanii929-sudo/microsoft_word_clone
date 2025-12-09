@@ -1,12 +1,19 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
-import { useRouter } from "next/navigation";
+import { createContext, useContext, useState } from "react";
+
+// Dummy types to match original interface
+interface User {
+  id: string;
+  email: string;
+  user_metadata: {
+    full_name?: string;
+    avatar_url?: string;
+  };
+}
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
+  session: any | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -14,43 +21,22 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!supabase) {
-      setLoading(false);
-      return;
+  // Always return a dummy Guest user so the app behaves as if logged in
+  const [user] = useState<User | null>({
+    id: 'guest-123',
+    email: 'guest@example.com',
+    user_metadata: {
+      full_name: 'Guest User',
     }
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  });
 
   const signOut = async () => {
-    if (supabase) {
-      await supabase.auth.signOut();
-    }
-    router.push("/auth");
+    // No-op for guest
+    console.log("Guest signed out (no-op)");
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session: null, loading: false, signOut }}>
       {children}
     </AuthContext.Provider>
   );

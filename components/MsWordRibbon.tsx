@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import { ChartDialog } from './WordFeatures/ChartDialog';
+import { ShapeDialog } from './WordFeatures/ShapeDialog';
 import {
     Clipboard, Copy, Scissors, Paintbrush,
     Bold, Italic, Underline, Strikethrough, Subscript, Superscript,
@@ -13,10 +15,11 @@ import {
     Layout as LayoutIcon,
     FileText, FilePlus, Minus,
     Shapes, Box, PieChart, Monitor, Video, Bookmark,
-    MessageSquare, FileType, Hash, Wand2
+    MessageSquare, FileType, Hash, Wand2,
+    X, Menu, BookOpen, FilePlus2,
+    TableProperties, Columns3, Rows3, Merge, Split
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,27 +27,50 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface MsWordRibbonProps {
     editor: any;
     onMarginsChange?: (margins: { top: number, right: number, bottom: number, left: number }) => void;
     onToggleAiSidebar?: () => void;
+    onToggleImmersiveReader?: () => void;
+    onInsertBlankPage?: () => void;
+    isTableActive?: boolean;
 }
 
-const TABS = ["File", "Home", "Insert", "Layout", "AI Tools", "References", "Review", "View", "Help"];
-// ... (imports and other consts remain same)
+const TABS = ["Home", "Insert", "Layout", "View", "AI Tools"];
 
 const FONT_FAMILIES = [
-    "Calibri", "Arial", "Times New Roman", "Segoe UI", "Georgia", "Verdana", "Roboto"
+    "Inter", "Outfit", "Calibri", "Times New Roman", "Consolas"
 ];
 
 const FONT_SIZES = [
-    "8", "9", "10", "11", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72"
+    "8", "10", "11", "12", "14", "16", "18", "24", "30", "36", "48", "60", "72"
 ];
 
-export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar }: MsWordRibbonProps) {
+const WORD_SHAPES = [
+    { type: "rectangle", label: "Rectangle" },
+    { type: "roundedRectangle", label: "Rounded Rectangle" },
+    { type: "circle", label: "Circle" },
+    { type: "triangle", label: "Triangle" },
+];
+
+const getShapeClipPath = (type: string) => {
+    switch (type) {
+        case 'circle': return 'circle(50% at 50% 50%)';
+        case 'triangle': return 'polygon(50% 0%, 0% 100%, 100% 100%)';
+        case 'roundedRectangle': return 'inset(0% round 20%)';
+        default: return 'inset(0%)';
+    }
+};
+
+export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar, onToggleImmersiveReader, onInsertBlankPage, isTableActive }: MsWordRibbonProps) {
     const [activeTab, setActiveTab] = useState("Home");
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isChartDialogOpen, setIsChartDialogOpen] = useState(false);
+    const [isShapeDialogOpen, setIsShapeDialogOpen] = useState(false);
+
+    // ... (helper functions remain same)
 
     if (!editor) return null;
 
@@ -57,6 +83,7 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar }: MsW
 
     const addImageDevice = () => {
         fileInputRef.current?.click();
+        // Implementation for handling file selection would go here
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,32 +100,37 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar }: MsW
         }
     };
 
+
     const addLink = () => {
         const previousUrl = editor.getAttributes('link').href;
         const url = window.prompt('Enter link URL:', previousUrl);
-
-        // cancelled
-        if (url === null) {
-            return;
-        }
-
-        // empty
+        if (url === null) return;
         if (url === '') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run();
             return;
         }
-
-        // update
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
     };
 
+
+    const new_blank_page = `
+      <div class="page-break-marker">
+        <span class="page-break-text">Page Break</span>
+      </div>
+      <div class="word-page-separator"></div>
+      <p></p>
+    `;
+
     const addPageBreak = () => {
-        editor.chain().focus().setPageBreak().run();
+        if (onInsertBlankPage) {
+            onInsertBlankPage();
+        } else {
+            editor.chain().focus().insertContent(new_blank_page).run();
+        }
     };
 
     return (
-        <div className="flex flex-col w-full bg-[#f3f3f3] border-b border-[#d6d6d6]">
-            {/* Hidden File Input */}
+        <div className="flex flex-col w-full glass-panel border-b-0 m-0 rounded-b-xl z-50">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -107,78 +139,82 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar }: MsW
                 accept="image/*"
             />
 
-            {/* Title Bar / Top Strip */}
-            <div className="flex items-center justify-between px-4 h-8 bg-[#2B579A] text-white select-none">
+            {/* Modern Header */}
+            <div className="flex items-center justify-between px-4 h-12 bg-white/40 backdrop-blur border-b border-white/20 select-none">
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-[#1e3e70] rounded-none" onClick={() => editor.chain().focus().undo().run()}>
-                            <Undo size={14} />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-[#1e3e70] rounded-none" onClick={() => editor.chain().focus().redo().run()}>
-                            <Redo size={14} />
-                        </Button>
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                            <span className="font-bold">W</span>
+                        </div>
+                        <span className="text-sm font-semibold text-slate-700">Untitled Document</span>
                     </div>
-                    <span className="text-xs font-medium">Document1 - Word</span>
                 </div>
-                <div className="flex items-center">
-                    {/* Window Controls Simulation */}
-                    <Button variant="ghost" size="icon" className="h-8 w-10 text-white hover:bg-[#E81123] rounded-none">
-                        <span className="text-sm">✕</span>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:bg-slate-200/50 rounded-full" onClick={() => editor.chain().focus().undo().run()}>
+                        <Undo size={16} />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:bg-slate-200/50 rounded-full" onClick={() => editor.chain().focus().redo().run()}>
+                        <Redo size={16} />
                     </Button>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center px-2 bg-[#2B579A]">
+            <div className="flex items-center px-4 pt-2 gap-2">
                 {TABS.map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={cn(
-                            "px-4 py-1 text-sm transition-colors rounded-t-sm",
+                            "px-4 py-2 text-sm transition-all rounded-t-lg relative",
                             activeTab === tab
-                                ? "bg-[#f3f3f3] text-[#2B579A] font-semibold"
-                                : "text-white hover:bg-[#436ba8] hover:text-white"
+                                ? "text-indigo-600 font-medium"
+                                : "text-slate-500 hover:text-slate-700 hover:bg-white/30"
                         )}
                     >
                         {tab}
+                        {activeTab === tab && (
+                            <motion.div
+                                layoutId="activeTab"
+                                className="absolute bottom-0 left-0 w-full h-[2px] bg-indigo-500 rounded-full"
+                            />
+                        )}
                     </button>
                 ))}
+
+                {/* Contextual Table Design Tab */}
+                {isTableActive && (
+                    <button
+                        onClick={() => setActiveTab("Table Design")}
+                        className={cn(
+                            "px-4 py-2 text-sm transition-all rounded-t-lg relative border-l-2 border-slate-200/60 ml-2",
+                            activeTab === "Table Design"
+                                ? "text-emerald-600 font-medium"
+                                : "text-slate-500 hover:text-slate-700 hover:bg-white/30"
+                        )}
+                    >
+                        Table Design
+                        {activeTab === "Table Design" && (
+                            <motion.div
+                                layoutId="activeTab"
+                                className="absolute bottom-0 left-0 w-full h-[2px] bg-emerald-500 rounded-full"
+                            />
+                        )}
+                    </button>
+                )}
             </div>
 
-            {/* Ribbon Content (Toolbar) */}
-            <div className="h-28 px-2 py-1 flex items-start gap-2 overflow-x-auto bg-[#f3f3f3]">
+            {/* Toolbar Content */}
+            <div className="h-24 px-4 py-2 flex items-center gap-4 overflow-x-auto no-scrollbar bg-white/40 backdrop-blur rounded-b-xl">
                 {activeTab === "Home" && (
-                    <>
-                        {/* Clipboard Group */}
-                        <div className="flex flex-col items-center justify-between h-full px-2 border-r border-gray-300">
-                            <div className="flex flex-col gap-1">
-                                <Button variant="ghost" className="flex flex-col h-14 w-12 gap-1 px-1 hover:bg-[#dcdcdc]" onClick={() => navigator.clipboard.readText().then(t => editor.commands.insertContent(t))}>
-                                    <Clipboard size={20} className="text-[#2B579A]" />
-                                    <span className="text-[10px]">Paste</span>
-                                </Button>
-                            </div>
-                            <div className="flex flex-col gap-1 items-start">
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]" onClick={() => document.execCommand('cut')}>
-                                    <Scissors size={12} /> Cut
-                                </Button>
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]" onClick={() => document.execCommand('copy')}>
-                                    <Copy size={12} /> Copy
-                                </Button>
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                    <Paintbrush size={12} /> Format
-                                </Button>
-                            </div>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Clipboard</span>
-                        </div>
-
-                        {/* Font Group */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <div className="flex gap-1 mb-1">
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
+                        {/* Font Family/Size */}
+                        <div className="flex flex-col gap-2 border-r border-slate-200/60 pr-4">
+                            <div className="flex gap-2">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-6 w-32 justify-between text-xs bg-white border-gray-300 hover:bg-[#e6f0ff]">
-                                            {editor.getAttributes('textStyle').fontFamily || "Calibri"} <ChevronDown size={10} />
+                                        <Button variant="outline" size="sm" className="w-32 justify-between text-xs bg-white/50 border-white/40 hover:bg-white/80">
+                                            {editor.getAttributes('textStyle').fontFamily || "Inter"} <ChevronDown size={12} />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="max-h-60 overflow-y-auto">
@@ -192,11 +228,11 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar }: MsW
 
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-6 w-14 justify-between text-xs bg-white border-gray-300 hover:bg-[#e6f0ff]">
-                                            {editor.getAttributes('textStyle').fontSize || "11"} <ChevronDown size={10} />
+                                        <Button variant="outline" size="sm" className="w-16 justify-between text-xs bg-white/50 border-white/40 hover:bg-white/80">
+                                            {editor.getAttributes('textStyle').fontSize || "11"} <ChevronDown size={12} />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="max-h-60 overflow-y-auto">
+                                    <DropdownMenuContent className="h-60 overflow-y-auto">
                                         {FONT_SIZES.map(size => (
                                             <DropdownMenuItem key={size} onClick={() => editor.chain().focus().setFontSize(size + "px").run()}>
                                                 {size}
@@ -206,190 +242,240 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar }: MsW
                                 </DropdownMenu>
                             </div>
 
-                            <div className="flex gap-1">
-                                <div className="flex bg-white/50 rounded-sm">
-                                    <ToolbarButton isActive={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} icon={Bold} />
-                                    <ToolbarButton isActive={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} icon={Italic} />
-                                    <ToolbarButton isActive={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()} icon={Underline} />
-                                    <ToolbarButton isActive={editor.isActive('strike')} onClick={() => editor.chain().focus().toggleStrike().run()} icon={Strikethrough} />
-                                    <ToolbarButton isActive={editor.isActive('subscript')} onClick={() => editor.chain().focus().toggleSubscript().run()} icon={Subscript} />
-                                    <ToolbarButton isActive={editor.isActive('superscript')} onClick={() => editor.chain().focus().toggleSuperscript().run()} icon={Superscript} />
-                                </div>
+                            <div className="flex gap-1 bg-white/40 p-1 rounded-lg">
+                                <ToolbarButton isActive={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} icon={Bold} />
+                                <ToolbarButton isActive={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} icon={Italic} />
+                                <ToolbarButton isActive={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()} icon={Underline} />
+                                <div className="w-[1px] h-4 bg-slate-300 mx-1 my-auto inline-block"></div>
+                                <ToolbarButton onClick={() => editor.chain().focus().setHighlight({ color: '#fef08a' }).run()} icon={Highlighter} className="text-yellow-600" />
+                                <ToolbarButton onClick={() => editor.chain().focus().setColor('#ef4444').run()} icon={Palette} className="text-red-500" />
                             </div>
-
-                            <div className="flex gap-1 mt-1">
-                                <ToolbarButton onClick={() => editor.chain().focus().setHighlight({ color: '#FFFF00' }).run()} icon={Highlighter} className="text-yellow-500" />
-                                <ToolbarButton onClick={() => editor.chain().focus().setColor('#FF0000').run()} icon={Palette} className="text-red-500" />
-                            </div>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Font</span>
                         </div>
 
-                        {/* Paragraph Group */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <div className="flex gap-1">
-                                <ToolbarButton isActive={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()} icon={List} />
-                                <ToolbarButton isActive={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()} icon={ListOrdered} />
-                                <ToolbarButton onClick={() => editor.chain().focus().liftListItem('listItem').run()} icon={Outdent} />
-                                <ToolbarButton onClick={() => editor.chain().focus().sinkListItem('listItem').run()} icon={Indent} />
-                            </div>
-                            <div className="flex gap-1">
+                        {/* Alignment */}
+                        <div className="flex items-center gap-1 border-r border-slate-200/60 pr-4">
+                            <div className="flex bg-white/40 p-1 rounded-lg">
                                 <ToolbarButton isActive={editor.isActive({ textAlign: 'left' })} onClick={() => editor.chain().focus().setTextAlign('left').run()} icon={AlignLeft} />
                                 <ToolbarButton isActive={editor.isActive({ textAlign: 'center' })} onClick={() => editor.chain().focus().setTextAlign('center').run()} icon={AlignCenter} />
                                 <ToolbarButton isActive={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()} icon={AlignRight} />
-                                <ToolbarButton isActive={editor.isActive({ textAlign: 'justify' })} onClick={() => editor.chain().focus().setTextAlign('justify').run()} icon={AlignJustify} />
                             </div>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Paragraph</span>
                         </div>
-                    </>
+
+                        {/* Lists */}
+                        <div className="flex items-center gap-1">
+                            <div className="flex bg-white/40 p-1 rounded-lg">
+                                <ToolbarButton isActive={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()} icon={List} />
+                                <ToolbarButton isActive={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()} icon={ListOrdered} />
+                            </div>
+                        </div>
+                    </motion.div>
                 )}
 
                 {activeTab === "Insert" && (
-                    <>
-                        {/* Pages Group */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <div className="flex gap-1">
-                                <Button variant="ghost" className="flex flex-col h-14 w-12 gap-1 px-1 hover:bg-[#dcdcdc]">
-                                    <FileText size={20} className="text-[#2B579A]" />
-                                    <span className="text-[10px] mt-1">Cover Page</span>
-                                </Button>
-                                <Button variant="ghost" className="flex flex-col h-14 w-12 gap-1 px-1 hover:bg-[#dcdcdc]" onClick={() => {
-                                    // Insert Blank Page: Break -> Empty Para -> Break
-                                    editor.chain().focus().setPageBreak().insertContent({ type: 'paragraph' }).setPageBreak().run();
-                                }}>
-                                    <FilePlus size={20} className="text-[#2B579A]" />
-                                    <span className="text-[10px] mt-1">Blank Page</span>
-                                </Button>
-                                <Button variant="ghost" className="flex flex-col h-14 w-12 gap-1 px-1 hover:bg-[#dcdcdc]" onClick={addPageBreak}>
-                                    <Minus size={20} className="text-[#2B579A]" />
-                                    <span className="text-[10px] mt-1">Page Break</span>
-                                </Button>
-                            </div>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Pages</span>
-                        </div>
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
+                        <ActionButton onClick={addPageBreak} icon={FilePlus} label="Blank Page" />
+                        <ActionButton onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()} icon={Table} label="Table" />
 
-                        {/* Tables Group */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <Button variant="ghost" className="flex flex-col h-14 w-12 gap-1 px-1 hover:bg-[#dcdcdc]" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}>
-                                <Table size={24} className="text-[#2B579A]" />
-                                <span className="text-[10px] mt-1">Table</span>
-                            </Button>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Tables</span>
-                        </div>
+                        <div className="w-[1px] h-12 bg-slate-300 my-auto"></div>
 
-                        {/* Illustrations Group */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <div className="flex gap-1">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="flex flex-col h-14 w-14 gap-1 px-1 hover:bg-[#dcdcdc]">
-                                            <ImageIcon size={24} className="text-[#2B579A]" />
-                                            <span className="text-[10px] mt-1">Pictures</span>
-                                            <ChevronDown size={10} />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={addImageDevice}>This Device...</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={addImageOnline}>Online Pictures...</DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="flex flex-col h-16 w-16 gap-2 hover:bg-white/50">
+                                    <div className="p-2 bg-indigo-100 text-indigo-600 rounded-full">
+                                        <ImageIcon size={20} />
+                                    </div>
+                                    <span className="text-[10px] font-medium text-slate-600">Image</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={addImageDevice}>This Device...</DropdownMenuItem>
+                                <DropdownMenuItem onClick={addImageOnline}>Online...</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
-                                <div className="flex flex-col gap-1 items-start">
-                                    <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                        <Shapes size={12} /> Shapes
-                                    </Button>
-                                    <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                        <Box size={12} /> 3D Models
-                                    </Button>
-                                    <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                        <PieChart size={12} /> SmartArt
-                                    </Button>
-                                    <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                        <Monitor size={12} /> Chart
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="flex flex-col h-16 w-16 gap-2 hover:bg-white/50">
+                                    <div className="p-2 bg-pink-100 text-pink-600 rounded-full">
+                                        <Shapes size={20} />
+                                    </div>
+                                    <span className="text-[10px] font-medium text-slate-600">Shapes</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-64">
+                                <div className="p-2">
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-start"
+                                        onClick={() => setIsShapeDialogOpen(true)}
+                                    >
+                                        More Shapes...
                                     </Button>
                                 </div>
-                            </div>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Illustrations</span>
-                        </div>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
-                        {/* Media */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <Button variant="ghost" className="flex flex-col h-14 w-12 gap-1 px-1 hover:bg-[#dcdcdc]">
-                                <Video size={24} className="text-[#2B579A]" />
-                                <span className="text-[10px] mt-1">Online Video</span>
-                            </Button>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Media</span>
-                        </div>
-
-                        {/* Links */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <div className="flex flex-col gap-1">
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]" onClick={addLink}>
-                                    <LinkIcon size={12} /> Link
-                                </Button>
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                    <Bookmark size={12} /> Bookmark
-                                </Button>
-                            </div>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Links</span>
-                        </div>
-
-                        {/* Header & Footer */}
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <div className="flex flex-col gap-1">
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                    <FileText size={12} /> Header
-                                </Button>
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                    <FileText size={12} /> Footer
-                                </Button>
-                                <Button variant="ghost" size="sm" className="h-6 px-1 text-[10px] gap-2 hover:bg-[#dcdcdc]">
-                                    <Hash size={12} /> Page Number
-                                </Button>
-                            </div>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Header & Footer</span>
-                        </div>
-                    </>
+                        <ActionButton onClick={() => setIsChartDialogOpen(true)} icon={PieChart} label="Chart" />
+                        <ActionButton onClick={addLink} icon={LinkIcon} label="Link" />
+                        <ActionButton onClick={() => editor.chain().focus().addComment?.().run()} icon={MessageSquare} label="Comment" />
+                    </motion.div>
                 )}
 
                 {activeTab === "Layout" && (
-                    <>
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="flex flex-col h-14 w-14 gap-1 px-1 hover:bg-[#dcdcdc]">
-                                        <LayoutIcon size={24} className="text-[#2B579A]" />
-                                        <span className="text-[10px] mt-1">Margins</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => onMarginsChange?.({ top: 96, right: 96, bottom: 96, left: 96 })}>
-                                        Normal (1")
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onMarginsChange?.({ top: 48, right: 48, bottom: 48, left: 48 })}>
-                                        Narrow (0.5")
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onMarginsChange?.({ top: 96, right: 192, bottom: 96, left: 192 })}>
-                                        Wide (2")
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">Page Setup</span>
-                        </div>
-                    </>
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
+                        <ActionButton onClick={() => onMarginsChange?.({ top: 96, right: 96, bottom: 96, left: 96 })} icon={LayoutIcon} label="Normal" />
+                        <ActionButton onClick={() => onMarginsChange?.({ top: 48, right: 48, bottom: 48, left: 48 })} icon={LayoutIcon} label="Narrow" />
+                    </motion.div>
+                )}
+
+                {activeTab === "View" && (
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
+                        <Button variant="ghost" className="flex flex-col h-16 w-24 gap-2 hover:bg-white/50 group" onClick={onToggleImmersiveReader}>
+                            <div className="p-2 bg-emerald-100 text-emerald-600 rounded-full group-hover:shadow-lg transition-all">
+                                <BookOpen size={20} />
+                            </div>
+                            <span className="text-[10px] font-medium text-emerald-600">Immersive Reader</span>
+                        </Button>
+                    </motion.div>
                 )}
 
                 {activeTab === "AI Tools" && (
-                    <>
-                        <div className="flex flex-col items-center h-full px-2 border-r border-gray-300 gap-1">
-                            <Button variant="ghost" className="flex flex-col h-14 w-16 gap-1 px-1 hover:bg-[#dcdcdc]" onClick={onToggleAiSidebar}>
-                                <Wand2 size={24} className="text-[#2B579A]" />
-                                <span className="text-[10px] mt-1">Media Studio</span>
-                            </Button>
-                            <span className="text-[10px] text-gray-500 mt-auto mb-1">AI Generation</span>
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
+                        <Button variant="ghost" className="flex flex-col h-16 w-24 gap-2 hover:bg-white/50 group" onClick={onToggleAiSidebar}>
+                            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-full group-hover:shadow-lg transition-all">
+                                <Wand2 size={20} />
+                            </div>
+                            <span className="text-[10px] font-medium text-indigo-600">Media Studio</span>
+                        </Button>
+                    </motion.div>
+                )}
+
+                {activeTab === "Table Design" && (
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
+                        {/* Row Operations */}
+                        <div className="flex flex-col gap-1 border-r border-slate-200/60 pr-4">
+                            <span className="text-[10px] text-slate-500 mb-1">Rows</span>
+                            <div className="flex gap-1">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50"
+                                    onClick={() => editor?.chain().focus().addRowBefore().run()}
+                                >
+                                    Insert Above
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50"
+                                    onClick={() => editor?.chain().focus().addRowAfter().run()}
+                                >
+                                    Insert Below
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50 text-red-600"
+                                    onClick={() => editor?.chain().focus().deleteRow().run()}
+                                >
+                                    Delete Row
+                                </Button>
+                            </div>
                         </div>
-                    </>
+
+                        {/* Column Operations */}
+                        <div className="flex flex-col gap-1 border-r border-slate-200/60 pr-4">
+                            <span className="text-[10px] text-slate-500 mb-1">Columns</span>
+                            <div className="flex gap-1">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50"
+                                    onClick={() => editor?.chain().focus().addColumnBefore().run()}
+                                >
+                                    Insert Left
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50"
+                                    onClick={() => editor?.chain().focus().addColumnAfter().run()}
+                                >
+                                    Insert Right
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50 text-red-600"
+                                    onClick={() => editor?.chain().focus().deleteColumn().run()}
+                                >
+                                    Delete Column
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Cell Operations */}
+                        <div className="flex flex-col gap-1 border-r border-slate-200/60 pr-4">
+                            <span className="text-[10px] text-slate-500 mb-1">Cells</span>
+                            <div className="flex gap-1">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50"
+                                    onClick={() => editor?.chain().focus().mergeCells().run()}
+                                >
+                                    Merge Cells
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs hover:bg-white/50"
+                                    onClick={() => editor?.chain().focus().splitCell().run()}
+                                >
+                                    Split Cell
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Table Operations */}
+                        <div className="flex flex-col gap-1">
+                            <span className="text-[10px] text-slate-500 mb-1">Table</span>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-2 text-xs hover:bg-white/50 text-red-600"
+                                onClick={() => editor?.chain().focus().deleteTable().run()}
+                            >
+                                Delete Table
+                            </Button>
+                        </div>
+                    </motion.div>
                 )}
             </div>
+
+            {/* Chart Dialog */}
+            <ChartDialog
+                open={isChartDialogOpen}
+                onOpenChange={setIsChartDialogOpen}
+                onInsert={(type, data, title) => {
+                    editor?.commands.insertContent({
+                        type: 'chart',
+                        attrs: { type, data, title }
+                    });
+                }}
+            />
+
+            {/* Shape Dialog */}
+            <ShapeDialog
+                open={isShapeDialogOpen}
+                onOpenChange={setIsShapeDialogOpen}
+                onInsert={(type, width, height, fillColor, borderColor, borderWidth) => {
+                    editor?.commands.insertContent({
+                        type: 'shape',
+                        attrs: { type, width, height, fillColor, borderColor, borderWidth }
+                    });
+                }}
+            />
         </div>
     );
 }
@@ -401,13 +487,23 @@ function ToolbarButton({ onClick, isActive, icon: Icon, className }: any) {
             size="sm"
             onClick={onClick}
             className={cn(
-                "h-7 w-7 p-0 hover:bg-[#c6d8f5] data-[active=true]:bg-[#c6d8f5] data-[active=true]:border-[#a3c2f0] border border-transparent rounded-sm transition-none",
+                "h-8 w-8 p-0 hover:bg-white/60 text-slate-600 data-[active=true]:bg-indigo-100 data-[active=true]:text-indigo-600 rounded-md transition-all",
                 className
             )}
             data-active={isActive}
         >
-            <Icon size={16} />
+            <Icon size={18} />
         </Button>
     )
 }
 
+function ActionButton({ onClick, icon: Icon, label }: any) {
+    return (
+        <Button variant="ghost" className="flex flex-col h-16 w-16 gap-2 hover:bg-white/50" onClick={onClick}>
+            <div className="p-2 bg-white border border-slate-200 rounded-full shadow-sm text-slate-700">
+                <Icon size={20} />
+            </div>
+            <span className="text-[10px] font-medium text-slate-600">{label}</span>
+        </Button>
+    )
+}
