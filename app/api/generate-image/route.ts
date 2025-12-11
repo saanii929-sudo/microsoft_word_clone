@@ -1,26 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
+
+// Ensure the uploads directory exists
+const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 export async function POST(request: NextRequest) {
   try {
-    let requestBody;
-    try {
-      requestBody = await request.json();
-    } catch (parseError: any) {
-      console.error('Error parsing request body:', parseError);
-      return NextResponse.json(
-        {
-          error: 'Invalid request body',
-          message: 'Request body must be valid JSON',
-          details: parseError.message
-        },
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
-    }
-
-    const { prompt, size = '1024x1024', useUnsplash = true } = requestBody;
+    const { prompt, duration = 5 } = await request.json();
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -29,133 +19,76 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Try Unsplash first (for stock photos based on search)
-    const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
-    if (useUnsplash && unsplashKey) {
-      try {
-        console.log('Searching Unsplash for:', prompt);
-        
-        // Search Unsplash for images matching the prompt
-        const searchResponse = await fetch(
-          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(prompt)}&per_page=1&orientation=landscape`,
-          {
-            headers: {
-              'Authorization': `Client-ID ${unsplashKey}`,
-            },
-          }
-        );
+    const stabilityApiKey = process.env.STABILITY_API_KEY;
 
-        if (searchResponse.ok) {
-          const searchData = await searchResponse.json();
-          
-          if (searchData.results && searchData.results.length > 0) {
-            const image = searchData.results[0];
-            const imageUrl = image.urls?.regular || image.urls?.full || image.urls?.raw;
-            
-            if (imageUrl) {
-              console.log('Found Unsplash image:', imageUrl);
-              return NextResponse.json({
-                url: imageUrl,
-                revised_prompt: prompt,
-                source: 'unsplash',
-                photographer: image.user?.name,
-                photographer_url: image.user?.links?.html,
-              });
-            }
-          }
-        } else {
-          console.warn('Unsplash search failed, falling back to OpenAI');
-        }
-      } catch (unsplashError: any) {
-        console.warn('Unsplash error, falling back to OpenAI:', unsplashError.message);
-      }
+    if (!stabilityApiKey) {
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      );
     }
 
-    // Fallback to OpenAI DALL-E for AI-generated images
-    const openaiKey = process.env.OPENAI_API_KEY;
-    if (openaiKey) {
-      try {
-        console.log('Generating image with OpenAI DALL-E:', prompt);
-        
-        const openaiResponse = await fetch('https://api.openai.com/v1/images/generations', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openaiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'dall-e-3',
-            prompt: prompt,
-            n: 1,
-            size: size === '1024x1024' ? '1024x1024' : '1024x1024',
-            quality: 'standard',
-          }),
-        });
-
-        if (!openaiResponse.ok) {
-          const errorData = await openaiResponse.json().catch(() => ({}));
-          console.error('OpenAI API Error:', errorData);
-          
-          if (openaiResponse.status === 401) {
-            return NextResponse.json(
-              {
-                error: 'Invalid OpenAI API key',
-                message: 'Please check your OPENAI_API_KEY in environment variables.',
-              },
-              { status: 401 }
-            );
-          }
-          
-          if (openaiResponse.status === 402 || openaiResponse.status === 429) {
-            return NextResponse.json(
-              {
-                error: 'OpenAI API quota exceeded',
-                message: 'Please check your OpenAI account billing and usage limits.',
-              },
-              { status: openaiResponse.status }
-            );
-          }
-          
-          throw new Error(errorData.error?.message || `OpenAI API error: ${openaiResponse.status}`);
-        }
-
-        const openaiData = await openaiResponse.json();
-        
-        if (openaiData.data && openaiData.data[0] && openaiData.data[0].url) {
-          return NextResponse.json({
-            url: openaiData.data[0].url,
-            revised_prompt: openaiData.data[0].revised_prompt || prompt,
-            source: 'openai',
-          });
-        }
-      } catch (openaiError: any) {
-        console.error('OpenAI generation error:', openaiError);
-        throw openaiError;
-      }
-    }
-
-    // If neither service is available
-    return NextResponse.json(
+    console.log('Generating image for:', prompt);
+    
+    const response = await fetch(
+      'https://api.stability.ai/v2beta/stable-image/generate/ultra',
       {
-        error: 'Image generation not available',
-        message: 'Please configure either UNSPLASH_ACCESS_KEY or OPENAI_API_KEY in your environment variables.',
-      },
-      { status: 500 }
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${stabilityApiKey}`,
+          'Accept': 'application/json',
+        },
+        body: (() => {
+          const formData = new FormData();
+          formData.append('prompt', prompt);
+          formData.append('output_format', 'jpeg');
+          formData.append('aspect_ratio', '16:9');
+          return formData;
+        })(),
+      }
     );
 
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const imageData = await response.json();
+    const base64Image = imageData.image;
+    
+    if (!base64Image) {
+      throw new Error('No image data received');
+    }
+
+    // Create a filename
+    const timestamp = Date.now();
+    const filename = `image_${timestamp}_${imageData.seed}.jpg`;
+    const filepath = path.join(uploadsDir, filename);
+    
+    // Save the image to file system
+    const buffer = Buffer.from(base64Image, 'base64');
+    fs.writeFileSync(filepath, buffer);
+    
+    // Create the public URL
+    const publicUrl = `/uploads/${filename}`;
+    
+    return NextResponse.json({
+      success: true,
+      url: publicUrl,
+      revised_prompt: prompt,
+      source: 'stability-ai',
+      duration: duration,
+      seed: imageData.seed,
+      local_path: filepath
+    });
+
   } catch (error: any) {
-    console.error('Error generating image:', error);
+    console.error('Error:', error);
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: error.message || 'An unexpected error occurred',
+        error: 'Generation failed',
+        message: error.message,
       },
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
+      { status: 500 }
     );
   }
 }
