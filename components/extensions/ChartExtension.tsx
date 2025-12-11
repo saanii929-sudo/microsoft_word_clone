@@ -20,6 +20,18 @@ export default Node.create({
             title: {
                 default: 'My Chart',
             },
+            width: {
+                default: 600,
+            },
+            height: {
+                default: 400,
+            },
+            x: {
+                default: 0,
+            },
+            y: {
+                default: 0,
+            },
         };
     },
 

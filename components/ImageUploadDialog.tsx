@@ -50,6 +50,9 @@ export function ImageUploadDialog({
   const [dragOver, setDragOver] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [unsplashQuery, setUnsplashQuery] = useState('');
+  const [unsplashResults, setUnsplashResults] = useState<any[]>([]);
+  const [isSearchingUnsplash, setIsSearchingUnsplash] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (files: FileList | null) => {
@@ -231,6 +234,49 @@ export function ImageUploadDialog({
     }
   };
 
+  const handleUnsplashSearch = async () => {
+    if (!unsplashQuery.trim()) return;
+
+    setIsSearchingUnsplash(true);
+    setUnsplashResults([]);
+
+    try {
+      const response = await fetch('/api/unsplash-search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: unsplashQuery.trim(),
+          per_page: 12,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || errorData.error || 'Failed to search Unsplash');
+      }
+
+      const data = await response.json();
+      
+      if (data.results && Array.isArray(data.results)) {
+        setUnsplashResults(data.results);
+        if (data.results.length === 0) {
+          toast.info('No images found. Try a different search term.');
+        }
+      } else {
+        throw new Error('Invalid response from Unsplash API');
+      }
+    } catch (error: any) {
+      console.error('Error searching Unsplash:', error);
+      toast.error(`Failed to search Unsplash: ${error.message || 'Unknown error'}`, {
+        duration: 6000
+      });
+    } finally {
+      setIsSearchingUnsplash(false);
+    }
+  };
+
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined;
   const dialogOpen = isControlled ? open : internalOpen;
@@ -255,9 +301,10 @@ export function ImageUploadDialog({
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="upload">Upload</TabsTrigger>
             <TabsTrigger value="url">From URL</TabsTrigger>
+            <TabsTrigger value="unsplash">Unsplash</TabsTrigger>
             <TabsTrigger value="ai">AI Generate</TabsTrigger>
           </TabsList>
 
@@ -434,7 +481,91 @@ export function ImageUploadDialog({
                 <div className="text-sm text-muted-foreground">
                   <div className="font-medium mb-1">Powered by AI</div>
                   <div className="text-xs">
-                    Requires OpenAI API key. Set OPENAI_API_KEY in your environment variables.
+                    Uses Unsplash for stock photos, then OpenAI DALL-E for AI-generated images. Configure UNSPLASH_ACCESS_KEY and/or OPENAI_API_KEY in your environment variables.
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="unsplash" className="space-y-4">
+            <div className="space-y-3">
+              <Label htmlFor="unsplash-query">Search for images</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="unsplash-query"
+                  placeholder="e.g., sunset, mountains, business..."
+                  value={unsplashQuery}
+                  onChange={(e) => setUnsplashQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && unsplashQuery.trim()) {
+                      handleUnsplashSearch();
+                    }
+                  }}
+                />
+                <Button 
+                  onClick={handleUnsplashSearch}
+                  disabled={!unsplashQuery.trim() || isSearchingUnsplash}
+                >
+                  {isSearchingUnsplash ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ImageIcon className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Search millions of free high-quality photos from Unsplash
+              </p>
+            </div>
+
+            {unsplashResults.length > 0 && (
+              <div className="space-y-2">
+                <Label>Search Results</Label>
+                <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+                  {unsplashResults.map((image: any, index: number) => (
+                    <div
+                      key={index}
+                      className="relative group cursor-pointer rounded-lg overflow-hidden border border-border hover:border-primary transition-colors"
+                      onClick={() => {
+                        const url = image.urls?.regular || image.urls?.full || image.urls?.raw;
+                        if (url) {
+                          onImageInsert(url);
+                          toast.success('Image inserted!');
+                          setDialogOpen?.(false);
+                        }
+                      }}
+                    >
+                      <img
+                        src={image.urls?.thumb || image.urls?.small}
+                        alt={image.alt_description || 'Unsplash image'}
+                        className="w-full h-24 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                        <Button size="sm" variant="secondary" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          Insert
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {unsplashResults.length === 0 && !isSearchingUnsplash && (
+              <Card>
+                <CardContent className="p-4 text-center text-sm text-muted-foreground">
+                  Enter a search term to find images from Unsplash
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-sm text-muted-foreground">
+                  <div className="font-medium mb-1">Powered by Unsplash</div>
+                  <div className="text-xs">
+                    Free high-quality photos. Requires UNSPLASH_ACCESS_KEY in your environment variables.
                   </div>
                 </div>
               </CardContent>

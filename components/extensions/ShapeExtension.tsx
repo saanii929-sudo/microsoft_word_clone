@@ -29,6 +29,12 @@ export default Node.create({
             borderWidth: {
                 default: 2,
             },
+            x: {
+                default: 0,
+            },
+            y: {
+                default: 0,
+            },
         };
     },
 

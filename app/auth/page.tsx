@@ -23,10 +23,36 @@ export default function Auth() {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Check if Supabase keys are configured
+    // Check if Supabase keys are configured and test connection
     if (!supabase) {
       setIsSupabaseConfigured(false);
+      console.error('Supabase client is not initialized');
+      return;
     }
+
+    // Test Supabase connection
+    const testConnection = async () => {
+      try {
+        // Try to get current session to test connection
+        const { error } = await supabase.auth.getSession();
+        if (error && error.message.includes('Invalid API key')) {
+          console.error('Invalid Supabase API key detected:', error);
+          setIsSupabaseConfigured(false);
+          toast.error('Invalid Supabase API key. Please check your Supabase dashboard and update the key.');
+        } else {
+          console.log('Supabase connection test successful');
+          setIsSupabaseConfigured(true);
+        }
+      } catch (err: any) {
+        console.error('Supabase connection test failed:', err);
+        if (err?.message?.includes('Invalid API key') || err?.message?.includes('JWT')) {
+          setIsSupabaseConfigured(false);
+          toast.error('Invalid Supabase API key. Please verify your API key in the Supabase dashboard.');
+        }
+      }
+    };
+
+    testConnection();
   }, []);
 
   useEffect(() => {
@@ -37,8 +63,31 @@ export default function Auth() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isSupabaseConfigured) {
-      toast.error("Supabase is not configured. Please use Demo Mode.");
+    
+    // Validate inputs
+    if (!email.trim()) {
+      toast.error('Please enter your email');
+      return;
+    }
+    
+    if (!password.trim()) {
+      toast.error('Please enter your password');
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    
+    if (!isLogin && !fullName.trim()) {
+      toast.error('Please enter your full name');
+      return;
+    }
+
+    if (!isSupabaseConfigured || !supabase) {
+      toast.error("Supabase is not configured. Please check your configuration.");
+      console.error('Supabase check failed:', { isSupabaseConfigured, supabase });
       return;
     }
 
@@ -46,32 +95,90 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        console.log('Attempting to sign in with email:', email);
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password.trim(),
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Sign in error:', error);
+          
+          // Provide more specific error messages
+          if (error.message.includes('Invalid login credentials')) {
+            throw new Error('Invalid email or password. Please check your credentials or sign up if you don\'t have an account.');
+          } else if (error.message.includes('Email not confirmed')) {
+            throw new Error('Please check your email and verify your account before signing in.');
+          } else {
+            throw error;
+          }
+        }
+
+        console.log('Sign in successful:', data);
         toast.success('Welcome back!');
-        router.push('/');
+        // Wait a bit for session to be set
+        setTimeout(() => {
+          router.push('/');
+        }, 500);
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
+        console.log('Attempting to sign up...');
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: password.trim(),
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
             data: {
-              full_name: fullName,
+              full_name: fullName.trim() || undefined,
             },
           },
         });
 
-        if (error) throw error;
-        toast.success('Account created successfully!');
-        router.push('/');
+        if (error) {
+          console.error('Sign up error:', error);
+          throw error;
+        }
+
+        console.log('Sign up response:', data);
+        
+        // Check if email confirmation is required
+        if (data.user && !data.session) {
+          toast.success('Account created! Please check your email to verify your account.');
+          // Don't redirect if email confirmation is required
+          setEmail('');
+          setPassword('');
+          setFullName('');
+        } else if (data.session) {
+          toast.success('Account created successfully!');
+          router.push('/');
+        } else {
+          toast.success('Account created! Please check your email.');
+        }
       }
     } catch (error: any) {
-      toast.error(error.message || 'An error occurred');
+      console.error('Auth error:', error);
+      
+      // Handle specific error types with helpful messages
+      if (error?.message?.includes('Invalid API key') || error?.message?.includes('JWT')) {
+        toast.error('Invalid Supabase API key. Please check your Supabase dashboard and update the API key.');
+        setIsSupabaseConfigured(false);
+      } else if (error?.message?.includes('Invalid login credentials') || error?.message?.includes('Invalid email or password')) {
+        // More helpful message for login errors
+        const message = isLogin 
+          ? 'Invalid email or password. Please check your credentials or click "Sign up" if you don\'t have an account yet.'
+          : error.message || 'Invalid email or password';
+        toast.error(message);
+      } else if (error?.message?.includes('Email not confirmed')) {
+        toast.error('Please check your email and verify your account before signing in.');
+      } else if (error?.message?.includes('User already registered')) {
+        toast.error('This email is already registered. Please sign in instead.');
+      } else if (error?.message?.includes('Email rate limit exceeded')) {
+        toast.error('Too many requests. Please try again later.');
+      } else if (error?.message?.includes('Password should be at least')) {
+        toast.error('Password is too short. Please use at least 6 characters.');
+      } else {
+        const errorMessage = error?.message || error?.error_description || 'An error occurred';
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

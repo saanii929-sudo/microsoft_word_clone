@@ -8,19 +8,19 @@ export async function POST(request: NextRequest) {
     } catch (parseError: any) {
       console.error('Error parsing request body:', parseError);
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid request body',
           message: 'Request body must be valid JSON',
           details: parseError.message
         },
-        { 
+        {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
         }
       );
     }
-    
-    const { prompt, size = '1024x1024', model = 'dall-e-3' } = requestBody;
+
+    const { prompt, size = '1024x1024', useUnsplash = true } = requestBody;
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -29,108 +29,128 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check for OpenAI API key
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    
-    if (!openaiApiKey) {
-      console.error('OpenAI API key not found in environment variables');
-      return NextResponse.json(
-        { 
-          error: 'OpenAI API key not configured',
-          message: 'Please set OPENAI_API_KEY in your environment variables. Make sure to restart your development server after adding it.',
-          hint: 'Check your .env.local file and ensure the variable is named exactly OPENAI_API_KEY'
-        },
-        { status: 500 }
-      );
-    }
-
-    // Log that we're attempting to generate (without exposing the key)
-    console.log('Attempting to generate image with OpenAI API...', {
-      promptLength: prompt.length,
-      model: model === 'dall-e-3' ? 'dall-e-3' : 'dall-e-2',
-      keyPresent: !!openaiApiKey,
-      keyLength: openaiApiKey.length
-    });
-
-    // Use OpenAI DALL-E API
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openaiApiKey}`,
-      },
-      body: JSON.stringify({
-        model: model === 'dall-e-3' ? 'dall-e-3' : 'dall-e-2',
-        prompt: prompt,
-        n: 1,
-        size: model === 'dall-e-3' ? '1024x1024' : size,
-        quality: model === 'dall-e-3' ? 'standard' : undefined,
-      }),
-    });
-
-    if (!response.ok) {
-      let errorData: any = {};
-      const contentType = response.headers.get('content-type');
-      
+    // Try Unsplash first (for stock photos based on search)
+    const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
+    if (useUnsplash && unsplashKey) {
       try {
-        if (contentType && contentType.includes('application/json')) {
-          const text = await response.text();
-          errorData = text ? JSON.parse(text) : {};
-        } else {
-          const text = await response.text().catch(() => '');
-          errorData = { message: text || response.statusText };
-        }
-      } catch (parseError) {
-        console.error('Error parsing OpenAI error response:', parseError);
-        errorData = { message: response.statusText || 'Unknown error' };
-      }
-      
-      console.error('OpenAI API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorData,
-        contentType
-      });
-      
-      return NextResponse.json(
-        { 
-          error: 'Failed to generate image',
-          details: errorData.error?.message || errorData.message || errorData.error?.code || `HTTP ${response.status}: ${response.statusText}`,
-          status: response.status,
-          fullError: process.env.NODE_ENV === 'development' ? errorData : undefined
-        },
-        { 
-          status: response.status,
-          headers: {
-            'Content-Type': 'application/json'
+        console.log('Searching Unsplash for:', prompt);
+        
+        // Search Unsplash for images matching the prompt
+        const searchResponse = await fetch(
+          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(prompt)}&per_page=1&orientation=landscape`,
+          {
+            headers: {
+              'Authorization': `Client-ID ${unsplashKey}`,
+            },
           }
+        );
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          
+          if (searchData.results && searchData.results.length > 0) {
+            const image = searchData.results[0];
+            const imageUrl = image.urls?.regular || image.urls?.full || image.urls?.raw;
+            
+            if (imageUrl) {
+              console.log('Found Unsplash image:', imageUrl);
+              return NextResponse.json({
+                url: imageUrl,
+                revised_prompt: prompt,
+                source: 'unsplash',
+                photographer: image.user?.name,
+                photographer_url: image.user?.links?.html,
+              });
+            }
+          }
+        } else {
+          console.warn('Unsplash search failed, falling back to OpenAI');
         }
-      );
+      } catch (unsplashError: any) {
+        console.warn('Unsplash error, falling back to OpenAI:', unsplashError.message);
+      }
     }
 
-    const data = await response.json();
-    
-    if (!data.data || !data.data[0] || !data.data[0].url) {
-      return NextResponse.json(
-        { error: 'Invalid response from image generation API' },
-        { status: 500 }
-      );
+    // Fallback to OpenAI DALL-E for AI-generated images
+    const openaiKey = process.env.OPENAI_API_KEY;
+    if (openaiKey) {
+      try {
+        console.log('Generating image with OpenAI DALL-E:', prompt);
+        
+        const openaiResponse = await fetch('https://api.openai.com/v1/images/generations', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openaiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'dall-e-3',
+            prompt: prompt,
+            n: 1,
+            size: size === '1024x1024' ? '1024x1024' : '1024x1024',
+            quality: 'standard',
+          }),
+        });
+
+        if (!openaiResponse.ok) {
+          const errorData = await openaiResponse.json().catch(() => ({}));
+          console.error('OpenAI API Error:', errorData);
+          
+          if (openaiResponse.status === 401) {
+            return NextResponse.json(
+              {
+                error: 'Invalid OpenAI API key',
+                message: 'Please check your OPENAI_API_KEY in environment variables.',
+              },
+              { status: 401 }
+            );
+          }
+          
+          if (openaiResponse.status === 402 || openaiResponse.status === 429) {
+            return NextResponse.json(
+              {
+                error: 'OpenAI API quota exceeded',
+                message: 'Please check your OpenAI account billing and usage limits.',
+              },
+              { status: openaiResponse.status }
+            );
+          }
+          
+          throw new Error(errorData.error?.message || `OpenAI API error: ${openaiResponse.status}`);
+        }
+
+        const openaiData = await openaiResponse.json();
+        
+        if (openaiData.data && openaiData.data[0] && openaiData.data[0].url) {
+          return NextResponse.json({
+            url: openaiData.data[0].url,
+            revised_prompt: openaiData.data[0].revised_prompt || prompt,
+            source: 'openai',
+          });
+        }
+      } catch (openaiError: any) {
+        console.error('OpenAI generation error:', openaiError);
+        throw openaiError;
+      }
     }
 
-    return NextResponse.json({
-      url: data.data[0].url,
-      revised_prompt: data.data[0].revised_prompt || prompt,
-    });
+    // If neither service is available
+    return NextResponse.json(
+      {
+        error: 'Image generation not available',
+        message: 'Please configure either UNSPLASH_ACCESS_KEY or OPENAI_API_KEY in your environment variables.',
+      },
+      { status: 500 }
+    );
 
   } catch (error: any) {
     console.error('Error generating image:', error);
     return NextResponse.json(
-      { 
-        error: 'Internal server error', 
+      {
+        error: 'Internal server error',
         message: error.message || 'An unexpected error occurred',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
       },
-      { 
+      {
         status: 500,
         headers: {
           'Content-Type': 'application/json'
@@ -139,4 +159,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

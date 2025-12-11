@@ -47,68 +47,167 @@ export function ShareDialog({ open, onOpenChange, documentId, documentTitle }: S
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open && documentId) {
+    if (open && documentId && documentId !== 'new') {
       loadCollaborators();
+    } else if (open && documentId === 'new') {
+      // New document, no collaborators yet
+      setCollaborators([]);
     }
   }, [open, documentId]);
 
   const loadCollaborators = async () => {
+    if (!supabase) {
+      console.warn('Supabase is not configured. Collaboration features are disabled.');
+      return;
+    }
+
+    if (!documentId || documentId === 'new') {
+      setCollaborators([]);
+      return;
+    }
+
     try {
-      const { data, error } = await supabase
+      const { data: collaboratorsData, error: collaboratorsError } = await supabase
         .from('document_collaborators')
-        .select(`
-          id,
-          user_id,
-          permission_level,
-          profiles:user_id (
-            full_name,
-            email
-          )
-        `)
+        .select('id, user_id, permission_level')
         .eq('document_id', documentId);
 
-      if (error) throw error;
-      setCollaborators(data || []);
-    } catch (error) {
+      if (collaboratorsError) throw collaboratorsError;
+
+      // Fetch profile data for each collaborator
+      const collaboratorsWithProfiles = await Promise.all(
+        (collaboratorsData || []).map(async (collab) => {
+          try {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('full_name, email')
+              .eq('id', collab.user_id)
+              .single();
+
+            if (profileError && profileError.code !== 'PGRST116') {
+              console.warn(`Error loading profile for user ${collab.user_id}:`, profileError);
+            }
+
+            return {
+              id: collab.id,
+              user_id: collab.user_id,
+              permission_level: collab.permission_level,
+              profiles: {
+                full_name: profile?.full_name || 'Unknown User',
+                email: profile?.email || ''
+              }
+            };
+          } catch (err: any) {
+            console.warn(`Error processing collaborator ${collab.user_id}:`, err);
+            return {
+              id: collab.id,
+              user_id: collab.user_id,
+              permission_level: collab.permission_level,
+              profiles: {
+                full_name: 'Unknown User',
+                email: ''
+              }
+            };
+          }
+        })
+      );
+
+      setCollaborators(collaboratorsWithProfiles);
+    } catch (error: any) {
       console.error('Error loading collaborators:', error);
+      // Show user-friendly error message
+      if (error?.message) {
+        console.error('Error details:', error.message);
+      }
+      // Don't show toast for empty results, just log
+      if (error?.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        toast.error('Failed to load collaborators');
+      }
     }
   };
 
   const inviteCollaborator = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim()) {
+      toast.error('Please enter an email address');
+      return;
+    }
+
+    if (!supabase) {
+      toast.error('Supabase is not configured. Please configure your environment variables.');
+      return;
+    }
+
+    if (!documentId || documentId === 'new') {
+      toast.error('Please save the document first before inviting collaborators');
+      return;
+    }
+
+    if (!user) {
+      toast.error('You must be signed in to invite collaborators');
+      return;
+    }
 
     setLoading(true);
     try {
       // First, find user by email
       const { data: userData, error: userError } = await supabase
         .from('profiles')
-        .select('id')
-        .eq('email', email.trim())
+        .select('id, email, full_name')
+        .eq('email', email.trim().toLowerCase())
         .single();
 
-      if (userError) throw userError;
+      if (userError) {
+        if (userError.code === 'PGRST116') {
+          throw new Error('User not found. Please make sure they have signed up.');
+        }
+        throw userError;
+      }
 
-      const { error } = await supabase
+      if (!userData || !userData.id) {
+        throw new Error('User not found');
+      }
+
+      // Check if user is trying to invite themselves
+      if (userData.id === user.id) {
+        toast.error('You cannot invite yourself as a collaborator');
+        setLoading(false);
+        return;
+      }
+
+      // Insert collaborator
+      const { error: insertError } = await supabase
         .from('document_collaborators')
         .insert({
           document_id: documentId,
           user_id: userData.id,
           permission_level: permission,
-          invited_by: user?.id,
+          invited_by: user.id,
         });
 
-      if (error) throw error;
+      if (insertError) {
+        if (insertError.code === '23505') {
+          throw new Error('User is already a collaborator on this document');
+        }
+        if (insertError.code === '23503') {
+          throw new Error('Document not found or you do not have permission');
+        }
+        throw insertError;
+      }
 
-      toast.success('Collaborator invited');
+      toast.success(`Collaborator invited: ${userData.full_name || userData.email}`);
       setEmail('');
       loadCollaborators();
     } catch (error: any) {
       console.error('Error inviting collaborator:', error);
-      if (error.code === '23505') {
+      const errorMessage = error?.message || error?.error_description || 'Failed to invite collaborator';
+      
+      if (error?.code === '23505') {
         toast.error('User is already a collaborator');
+      } else if (error?.code === 'PGRST116') {
+        toast.error('User not found. Please make sure they have signed up.');
       } else {
-        toast.error('Failed to invite collaborator');
+        toast.error(errorMessage);
       }
     } finally {
       setLoading(false);
@@ -116,19 +215,46 @@ export function ShareDialog({ open, onOpenChange, documentId, documentTitle }: S
   };
 
   const removeCollaborator = async (collaboratorId: string) => {
+    if (!supabase) {
+      toast.error('Supabase is not configured. Please configure your environment variables.');
+      return;
+    }
+
+    if (!documentId || documentId === 'new') {
+      toast.error('Invalid document');
+      return;
+    }
+
+    if (!user) {
+      toast.error('You must be signed in to remove collaborators');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('document_collaborators')
         .delete()
-        .eq('id', collaboratorId);
+        .eq('id', collaboratorId)
+        .eq('document_id', documentId); // Extra safety check
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST301') {
+          throw new Error('You do not have permission to remove this collaborator');
+        }
+        throw error;
+      }
 
       toast.success('Collaborator removed');
       loadCollaborators();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing collaborator:', error);
-      toast.error('Failed to remove collaborator');
+      const errorMessage = error?.message || error?.error_description || 'Failed to remove collaborator';
+      
+      if (error?.code === 'PGRST301') {
+        toast.error('You do not have permission to remove this collaborator');
+      } else {
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -154,6 +280,14 @@ export function ShareDialog({ open, onOpenChange, documentId, documentTitle }: S
         </DialogHeader>
 
         <div className="space-y-4">
+          {!supabase && (
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                Supabase is not configured. Collaboration features are disabled. Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment variables.
+              </p>
+            </div>
+          )}
+
           {/* Share Link */}
           <div className="space-y-2">
             <Label>Shareable Link</Label>
@@ -181,13 +315,13 @@ export function ShareDialog({ open, onOpenChange, documentId, documentTitle }: S
                 className="flex-1"
               />
               <Select value={permission} onValueChange={setPermission}>
-                <SelectTrigger className="w-28">
+                <SelectTrigger className="w-36 h-10 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 text-gray-900 dark:text-gray-100 font-semibold shadow-md hover:shadow-lg transition-all">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="view">Can view</SelectItem>
-                  <SelectItem value="comment">Can comment</SelectItem>
-                  <SelectItem value="edit">Can edit</SelectItem>
+                <SelectContent className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 shadow-2xl">
+                  <SelectItem value="view" className="cursor-pointer">Can view</SelectItem>
+                  <SelectItem value="comment" className="cursor-pointer">Can comment</SelectItem>
+                  <SelectItem value="edit" className="cursor-pointer">Can edit</SelectItem>
                 </SelectContent>
               </Select>
               <Button type="submit" disabled={loading}>

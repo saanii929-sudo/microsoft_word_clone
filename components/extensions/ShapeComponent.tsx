@@ -43,10 +43,23 @@ const SHAPE_TYPES = {
 };
 
 export default function ShapeComponent({ node, updateAttributes, selected }: any) {
-    const { type, width, height, fillColor, borderColor, borderWidth } = node.attrs;
+    const { type, width, height, fillColor, borderColor, borderWidth, x = 0, y = 0 } = node.attrs;
     const [isResizing, setIsResizing] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
     const [resizeHandle, setResizeHandle] = useState<string | null>(null);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const [isHovered, setIsHovered] = useState(false);
     const shapeRef = useRef<HTMLDivElement>(null);
+
+    const handleDragStart = (e: React.MouseEvent) => {
+        // Only start drag if not clicking on resize handles
+        if (!(e.target as HTMLElement).classList.contains('resize-handle')) {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDragging(true);
+            setDragStart({ x: e.clientX - x, y: e.clientY - y });
+        }
+    };
 
     const handleMouseDown = (handle: string) => (e: React.MouseEvent) => {
         e.preventDefault();
@@ -54,6 +67,28 @@ export default function ShapeComponent({ node, updateAttributes, selected }: any
         setIsResizing(true);
         setResizeHandle(handle);
     };
+
+    useEffect(() => {
+        if (isDragging) {
+            const handleMouseMove = (e: MouseEvent) => {
+                const newX = e.clientX - dragStart.x;
+                const newY = e.clientY - dragStart.y;
+                updateAttributes({ x: newX, y: newY });
+            };
+
+            const handleMouseUp = () => {
+                setIsDragging(false);
+            };
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+
+            return () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+        }
+    }, [isDragging, dragStart, updateAttributes]);
 
     useEffect(() => {
         if (!isResizing) return;
@@ -101,14 +136,23 @@ export default function ShapeComponent({ node, updateAttributes, selected }: any
     return (
         <NodeViewWrapper
             className={`inline-block relative my-4 ${selected ? 'ring-2 ring-indigo-500 ring-offset-2' : ''}`}
-            style={{ width: `${width}px`, height: `${height}px` }}
+            style={{
+                width: `${width}px`,
+                height: `${height}px`,
+                position: 'relative',
+                left: `${x}px`,
+                top: `${y}px`,
+            }}
             ref={shapeRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <svg
                 width={width}
                 height={height}
                 className="block"
-                style={{ cursor: selected ? 'move' : 'pointer' }}
+                style={{ cursor: isDragging ? 'grabbing' : (isHovered || selected ? 'grab' : 'pointer') }}
+                onMouseDown={handleDragStart}
             >
                 <path
                     d={pathData}
@@ -137,7 +181,7 @@ export default function ShapeComponent({ node, updateAttributes, selected }: any
                             <div
                                 key={handle}
                                 onMouseDown={handleMouseDown(handle)}
-                                className="absolute w-2 h-2 bg-white border-2 border-indigo-500 rounded-full hover:scale-150 transition-transform"
+                                className="resize-handle absolute w-2 h-2 bg-white border-2 border-indigo-500 rounded-full hover:scale-150 transition-transform"
                                 style={positions[handle]}
                             />
                         );

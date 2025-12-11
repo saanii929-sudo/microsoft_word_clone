@@ -71,7 +71,14 @@ export function AiSidebar({ isOpen, onClose, editor }: AiSidebarProps) {
             }
 
             if (!response.ok) {
-                toast.error(`Generation Failed: ${data.error || 'Unknown error'}`);
+                // Handle 501 (Not Implemented) specially
+                if (response.status === 501) {
+                    toast.error(`${mediaType === 'image' ? 'Image' : 'Video'} generation is not available with Gemini API. Please use AI Writer for text generation.`, {
+                        duration: 5000,
+                    });
+                } else {
+                    toast.error(`Generation Failed: ${data.error || 'Unknown error'}`);
+                }
                 setIsGenerating(false);
                 return;
             }
@@ -93,15 +100,30 @@ export function AiSidebar({ isOpen, onClose, editor }: AiSidebarProps) {
     };
 
     const insertMedia = (item: { type: MediaType, url: string }) => {
+        if (!editor) {
+            toast.error('Editor not available');
+            return;
+        }
+
         if (item.type === 'image') {
-            editor.chain().focus().setImage({ src: item.url }).run();
+            // Try to use ResizableImage first, fallback to regular Image
+            if (editor.commands.setResizableImage) {
+                editor.chain().focus().setResizableImage({ src: item.url }).run();
+            } else {
+                editor.chain().focus().setImage({ src: item.url }).run();
+            }
             toast.success('Image inserted');
         } else {
-            if (editor.can().setVideo({ src: item.url })) {
+            if (editor.commands.setVideo) {
                 editor.chain().focus().setVideo({ src: item.url, controls: true }).run();
                 toast.success('Video inserted');
             } else {
-                editor.chain().focus().setImage({ src: item.url, title: "AI Generated Video" }).run();
+                // Try ResizableImage for video placeholder, fallback to regular Image
+                if (editor.commands.setResizableImage) {
+                    editor.chain().focus().setResizableImage({ src: item.url }).run();
+                } else {
+                    editor.chain().focus().setImage({ src: item.url, title: "AI Generated Video" }).run();
+                }
                 toast.success('Video inserted (as image placeholder)');
             }
         }

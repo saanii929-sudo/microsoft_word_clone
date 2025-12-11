@@ -17,10 +17,19 @@ import {
   Subscript as SubscriptIcon, Superscript as SuperscriptIcon,
   Highlighter, Palette, Type, Table, Image as ImageIcon,
   Link as LinkIcon, Quote, Code, Minus, Plus,
-  ChevronDown, ZoomIn, ZoomOut, MessageSquare
+  ChevronDown, ZoomIn, ZoomOut, MessageSquare, Mic
 } from "lucide-react";
 import { ColorPicker } from "./ColorPicker";
 import { ImageUploadDialog } from "./ImageUploadDialog";
+import { VoiceToText } from "./VoiceToText";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface WordRibbonProps {
   editor: any;
@@ -352,6 +361,29 @@ export function WordRibbon({
               <span className="text-xs">Image</span>
             </Button>
           </ImageUploadDialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8"
+                title="Voice to Text"
+              >
+                <Mic className="h-4 w-4 mr-1" />
+                <span className="text-xs">Voice</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Voice to Text</DialogTitle>
+                <DialogDescription>
+                  Record your voice and it will be transcribed into the editor
+                </DialogDescription>
+              </DialogHeader>
+              <VoiceToText editor={editor} />
+            </DialogContent>
+          </Dialog>
 
           <Button
             variant="outline"

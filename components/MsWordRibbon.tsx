@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { ChartDialog } from './WordFeatures/ChartDialog';
 import { ShapeDialog } from './WordFeatures/ShapeDialog';
+import { AiWriterDialog } from './AiWriterDialog';
 import {
     Clipboard, Copy, Scissors, Paintbrush,
     Bold, Italic, Underline, Strikethrough, Subscript, Superscript,
@@ -36,6 +37,7 @@ interface MsWordRibbonProps {
     onToggleImmersiveReader?: () => void;
     onInsertBlankPage?: () => void;
     isTableActive?: boolean;
+    selectedText?: string;
 }
 
 const TABS = ["Home", "Insert", "Layout", "View", "AI Tools"];
@@ -64,11 +66,12 @@ const getShapeClipPath = (type: string) => {
     }
 };
 
-export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar, onToggleImmersiveReader, onInsertBlankPage, isTableActive }: MsWordRibbonProps) {
+export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar, onToggleImmersiveReader, onInsertBlankPage, isTableActive, selectedText }: MsWordRibbonProps) {
     const [activeTab, setActiveTab] = useState("Home");
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isChartDialogOpen, setIsChartDialogOpen] = useState(false);
     const [isShapeDialogOpen, setIsShapeDialogOpen] = useState(false);
+    const [isAiWriterOpen, setIsAiWriterOpen] = useState(false);
 
     // ... (helper functions remain same)
 
@@ -250,7 +253,20 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar, onTog
                                 <ToolbarButton onClick={() => editor.chain().focus().setHighlight({ color: '#fef08a' }).run()} icon={Highlighter} className="text-yellow-600" />
                                 <ToolbarButton onClick={() => editor.chain().focus().setColor('#ef4444').run()} icon={Palette} className="text-red-500" />
                             </div>
+
+                            {/* AI Writer Button */}
+                            <Button
+                                variant="ghost"
+                                onClick={() => setIsAiWriterOpen(true)}
+                                className="flex flex-col h-16 w-16 gap-2 hover:bg-white/50 group"
+                            >
+                                <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-full group-hover:shadow-lg transition-all">
+                                    <Wand2 size={20} />
+                                </div>
+                                <span className="text-[10px] font-medium text-indigo-600">AI Writer</span>
+                            </Button>
                         </div>
+
 
                         {/* Alignment */}
                         <div className="flex items-center gap-1 border-r border-slate-200/60 pr-4">
@@ -261,11 +277,143 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar, onTog
                             </div>
                         </div>
 
-                        {/* Lists */}
+                        {/* Lists with Dropdowns */}
                         <div className="flex items-center gap-1">
-                            <div className="flex bg-white/40 p-1 rounded-lg">
-                                <ToolbarButton isActive={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()} icon={List} />
-                                <ToolbarButton isActive={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()} icon={ListOrdered} />
+                            <div className="flex bg-white/40 p-1 rounded-lg gap-1">
+                                {/* Bullet List Dropdown */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className={cn(
+                                                "h-8 w-8 p-0 hover:bg-white/60 text-slate-600 rounded-md transition-all",
+                                                editor.isActive('bulletList') && "bg-indigo-100 text-indigo-600"
+                                            )}
+                                        >
+                                            <List size={18} />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-48">
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('bulletList')) {
+                                                editor.chain().focus().toggleBulletList().run();
+                                            }
+                                            editor.chain().focus().setBulletStyle('disc').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg">•</span>
+                                                <span className="text-sm">Solid Bullet</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('bulletList')) {
+                                                editor.chain().focus().toggleBulletList().run();
+                                            }
+                                            editor.chain().focus().setBulletStyle('circle').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg">○</span>
+                                                <span className="text-sm">Hollow Bullet</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('bulletList')) {
+                                                editor.chain().focus().toggleBulletList().run();
+                                            }
+                                            editor.chain().focus().setBulletStyle('square').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg">▪</span>
+                                                <span className="text-sm">Square Bullet</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('bulletList')) {
+                                                editor.chain().focus().toggleBulletList().run();
+                                            }
+                                            editor.chain().focus().setBulletStyle('check').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg">✓</span>
+                                                <span className="text-sm">Checkmark</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+
+                                {/* Numbered List Dropdown */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className={cn(
+                                                "h-8 w-8 p-0 hover:bg-white/60 text-slate-600 rounded-md transition-all",
+                                                editor.isActive('orderedList') && "bg-indigo-100 text-indigo-600"
+                                            )}
+                                        >
+                                            <ListOrdered size={18} />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-48">
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('orderedList')) {
+                                                editor.chain().focus().toggleOrderedList().run();
+                                            }
+                                            editor.chain().focus().setNumberingStyle('decimal').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-mono">1. 2. 3.</span>
+                                                <span className="text-sm">Numbers</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('orderedList')) {
+                                                editor.chain().focus().toggleOrderedList().run();
+                                            }
+                                            editor.chain().focus().setNumberingStyle('lower-alpha').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-mono">a. b. c.</span>
+                                                <span className="text-sm">Letters (lowercase)</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('orderedList')) {
+                                                editor.chain().focus().toggleOrderedList().run();
+                                            }
+                                            editor.chain().focus().setNumberingStyle('upper-alpha').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-mono">A. B. C.</span>
+                                                <span className="text-sm">Letters (uppercase)</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('orderedList')) {
+                                                editor.chain().focus().toggleOrderedList().run();
+                                            }
+                                            editor.chain().focus().setNumberingStyle('lower-roman').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-mono">i. ii. iii.</span>
+                                                <span className="text-sm">Roman (lowercase)</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            if (!editor.isActive('orderedList')) {
+                                                editor.chain().focus().toggleOrderedList().run();
+                                            }
+                                            editor.chain().focus().setNumberingStyle('upper-roman').run();
+                                        }}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-mono">I. II. III.</span>
+                                                <span className="text-sm">Roman (uppercase)</span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
                         </div>
                     </motion.div>
@@ -474,6 +622,19 @@ export function MsWordRibbon({ editor, onMarginsChange, onToggleAiSidebar, onTog
                         type: 'shape',
                         attrs: { type, width, height, fillColor, borderColor, borderWidth }
                     });
+                }}
+            />
+
+            {/* AI Writer Dialog */}
+            <AiWriterDialog
+                open={isAiWriterOpen}
+                onOpenChange={setIsAiWriterOpen}
+                selectedText={selectedText || ''}
+                onInsert={(text) => {
+                    if (selectedText) {
+                        editor?.commands.deleteSelection();
+                    }
+                    editor?.commands.insertContent(text);
                 }}
             />
         </div>

@@ -1,16 +1,18 @@
 'use client';
 
-import dynamic from "next/dynamic";
-
-const MultiPageEditor = dynamic(
-  () => import("@/components/Editor"),
-  { ssr: false }
-);
+import { DocumentCreationForm } from '@/components/DocumentCreationForm';
+import { useRouter } from 'next/navigation';
 
 export default function New() {
+  const router = useRouter();
+
+  const handleComplete = (documentId: string) => {
+    router.push(`/editor/${documentId}`);
+  };
+
   return (
-    <div className="p-4">
-      <MultiPageEditor />
+    <div className="min-h-screen">
+      <DocumentCreationForm onComplete={handleComplete} />
     </div>
   );
 }

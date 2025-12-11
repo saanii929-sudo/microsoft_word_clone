@@ -1,0 +1,55 @@
+/* Draggable element styles */
+.ProseMirror img {
+    cursor: grab;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.ProseMirror img:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+    border-color: rgb(99, 102, 241);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    cursor: grab;
+}
+
+.ProseMirror img:active {
+    cursor: grabbing;
+}
+
+/* Table draggable styles */
+.ProseMirror table {
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.ProseMirror table:hover {
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.ProseMirror table.ProseMirror-selectednode {
+    outline: 2px solid rgb(99, 102, 241);
+    outline-offset: 2px;
+    cursor: grab;
+}
+
+.ProseMirror table:active {
+    cursor: grabbing;
+}
+
+/* Resize cursor styles */
+.resize-handle {
+    z-index: 10;
+}
+
+.resize-handle:hover {
+    transform: scale(1.5);
+}
+
+/* Chart drag handle */
+.chart-drag-handle {
+    z-index: 5;
+}

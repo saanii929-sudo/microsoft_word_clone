@@ -51,6 +51,7 @@ import { TextBox } from './extensions/TextBox';
 import { WordArt } from './extensions/WordArt';
 import { DropCap } from './extensions/DropCap';
 import { SignatureLine } from './extensions/SignatureLine';
+import ChartExtension from './extensions/ChartExtension';
 import { CoverPageDialog } from './WordFeatures/CoverPageDialog';
 import { ShapesDialog } from './WordFeatures/ShapesDialog';
 import { ChartsDialog } from './WordFeatures/ChartsDialog';
@@ -64,6 +65,7 @@ import { LinkDialog } from './WordFeatures/LinkDialog';
 import { WordArtDialog } from './WordFeatures/WordArtDialog';
 import { SignatureLineDialog } from './WordFeatures/SignatureLineDialog';
 import { CommentRenderer } from './WordFeatures/CommentRenderer';
+import { ReadAloud } from './ReadAloud';
 
 // Custom FontSize extension
 const FontSize = TextStyle.extend({
@@ -103,7 +105,7 @@ const FontSize = TextStyle.extend({
 // Generate random color for user cursor
 const getRandomColor = () => {
   const colors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
     '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'
   ];
   return colors[Math.floor(Math.random() * colors.length)];
@@ -213,6 +215,7 @@ export default function WordEditor() {
       DropCap,
       SignatureLine,
       Video,
+      ChartExtension,
     ],
     editorProps: {
       attributes: {
@@ -245,7 +248,7 @@ export default function WordEditor() {
       setCharacterCount(text.length);
       // Estimate pages (assuming ~500 words per page)
       setPageCount(Math.max(1, Math.ceil(words.length / 500)));
-      
+
       // Convert any raw <comment> tags to proper comment nodes
       const html = editor.getHTML();
       if (html.includes('<comment>')) {
@@ -293,7 +296,7 @@ export default function WordEditor() {
 
   const fetchDocument = async () => {
     if (!id || id === 'new' || !editor) return;
-    
+
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -471,7 +474,7 @@ export default function WordEditor() {
           .single();
 
         if (error) throw error;
-        
+
         toast.success('Document created!');
         router.push(`/editor/${data.id}`);
       } else {
@@ -496,7 +499,7 @@ export default function WordEditor() {
 
     try {
       const content = editor.getHTML();
-      
+
       if (format === 'html') {
         const blob = new Blob([content], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
@@ -582,23 +585,18 @@ export default function WordEditor() {
     }
   };
 
-  const insertChart = (chartType: string, data: any) => {
+  const insertChart = (chartType: string, chartData: any[], chartTitle: string) => {
     if (editor) {
-      const chartHTML = `
-        <div data-chart-type="${chartType}" style="margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-          <h3 style="margin-bottom: 15px;">${data.title}</h3>
-          <div style="display: flex; align-items: flex-end; gap: 10px; height: 200px;">
-            ${data.values.map((value: number, index: number) => `
-              <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                <div style="background: linear-gradient(to top, #3b82f6, #60a5fa); width: 100%; height: ${(value / Math.max(...data.values)) * 100}%; margin-bottom: 5px; border-radius: 4px 4px 0 0;"></div>
-                <span style="font-size: 12px;">${data.labels[index]}</span>
-                <span style="font-size: 10px; color: #666;">${value}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-      editor.chain().focus().insertContent(chartHTML).run();
+      editor.chain().focus().insertContent({
+        type: 'chart',
+        attrs: {
+          type: chartType,
+          data: chartData,
+          title: chartTitle,
+          width: 600,
+          height: 400,
+        },
+      }).run();
     }
   };
 
@@ -776,12 +774,13 @@ export default function WordEditor() {
 
       {/* Editor Area */}
       <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-900">
-        <div 
-          className="max-w-4xl mx-auto my-8 bg-white dark:bg-gray-800 shadow-lg min-h-[1123px] p-8" 
+        <div
+          className="max-w-4xl mx-auto my-8 bg-white dark:bg-gray-800 shadow-lg min-h-[1123px] p-8"
           style={{ zoom: `${zoomLevel}%` }}
         >
           <CommentRenderer />
           <EditorContent editor={editor} />
+          {editor && <ReadAloud editor={editor} />}
         </div>
       </div>
 

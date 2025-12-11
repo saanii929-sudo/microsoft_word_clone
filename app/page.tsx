@@ -1,16 +1,243 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Plus, Clock, FileText, Search, MoreHorizontal } from 'lucide-react';
+import { Plus, Clock, FileText, Search, MoreHorizontal, LogOut, User, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { formatDistanceToNow } from 'date-fns';
 
-const recentDocs = [
-  { id: 1, title: 'Project Proposal', date: '2 hours ago', type: 'marketing' },
-  { id: 2, title: 'Q4 Financial Report', date: 'Yesterday', type: 'finance' },
-  { id: 3, title: 'Brainstorming Notes', date: '3 days ago', type: 'personal' },
-];
+interface Document {
+  id: string;
+  title: string;
+  updated_at: string;
+  created_at: string;
+  owner_id: string;
+  content?: {
+    description?: string | null;
+    imageUrl?: string | null;
+    audioVoiceEnabled?: boolean;
+    pageCount?: number;
+    combinedContent?: string;
+  } | null;
+  profiles?: {
+    full_name?: string;
+    email?: string;
+  };
+}
 
 export default function Home() {
+  const { user, loading: authLoading, signOut } = useAuth();
+  const router = useRouter();
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/auth');
+    }
+  }, [user, authLoading, router]);
+
+  // Load documents
+  useEffect(() => {
+    if (user) {
+      loadDocuments();
+    }
+  }, [user]);
+
+  const loadDocuments = async () => {
+    if (!user || !supabase) return;
+
+    try {
+      setLoading(true);
+      
+      // Fetch documents where user is owner
+      const { data: ownedDocs, error: ownedError } = await supabase
+        .from('documents')
+        .select('id, title, updated_at, created_at, owner_id, content')
+        .eq('owner_id', user.id)
+        .eq('is_archived', false)
+        .order('updated_at', { ascending: false });
+
+      if (ownedError) throw ownedError;
+
+      // Fetch documents where user is a collaborator
+      const { data: collabDocs, error: collabError } = await supabase
+        .from('document_collaborators')
+        .select('document_id')
+        .eq('user_id', user.id);
+
+      if (collabError) throw collabError;
+
+      // Get document IDs from collaborators
+      const collabDocIds = (collabDocs || []).map(c => c.document_id);
+
+      // Fetch collaborated documents
+      let collabDocuments: any[] = [];
+      if (collabDocIds.length > 0) {
+        const { data: collabDocsData, error: collabDocsError } = await supabase
+          .from('documents')
+          .select('id, title, updated_at, created_at, owner_id, content')
+          .in('id', collabDocIds)
+          .eq('is_archived', false)
+          .order('updated_at', { ascending: false });
+
+        if (collabDocsError) throw collabDocsError;
+        collabDocuments = collabDocsData || [];
+      }
+
+      // Combine and deduplicate documents
+      const allDocs: Document[] = [];
+      const docIds = new Set<string>();
+
+      // Add owned documents
+      if (ownedDocs) {
+        for (const doc of ownedDocs) {
+          if (!docIds.has(doc.id)) {
+            docIds.add(doc.id);
+            // Fetch owner profile (handle errors gracefully)
+            let profile = null;
+            try {
+              const { data: profileData, error: profileError } = await supabase
+                .from('profiles')
+                .select('full_name, email')
+                .eq('id', doc.owner_id)
+                .single();
+              
+              if (!profileError) {
+                profile = profileData;
+              }
+            } catch (profileErr) {
+              // Profile might not exist, that's okay
+              console.warn('Profile not found for user:', doc.owner_id);
+            }
+
+            allDocs.push({
+              ...doc,
+              profiles: profile || undefined
+            });
+          }
+        }
+      }
+
+      // Add collaborated documents
+      for (const doc of collabDocuments) {
+        if (!docIds.has(doc.id)) {
+          docIds.add(doc.id);
+          // Fetch owner profile (handle errors gracefully)
+          let profile = null;
+          try {
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('full_name, email')
+              .eq('id', doc.owner_id)
+              .single();
+            
+            if (!profileError) {
+              profile = profileData;
+            }
+          } catch (profileErr) {
+            // Profile might not exist, that's okay
+            console.warn('Profile not found for user:', doc.owner_id);
+          }
+
+          allDocs.push({
+            ...doc,
+            profiles: profile || undefined
+          });
+        }
+      }
+
+      // Sort by updated_at
+      allDocs.sort((a, b) => 
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+
+      setDocuments(allDocs);
+    } catch (error: any) {
+      console.error('Error loading documents:', error);
+      
+      // Extract meaningful error message
+      let errorMessage = 'Failed to load documents';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.error_description) {
+        errorMessage = error.error_description;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.code) {
+        // Handle specific Supabase error codes
+        if (error.code === 'PGRST116') {
+          // No rows returned - this is okay, just means no documents yet
+          console.log('No documents found (this is normal for new users)');
+          setDocuments([]);
+          return;
+        } else if (error.code === '42P01') {
+          errorMessage = 'Database tables not found. Please run the SQL migration in your Supabase dashboard.';
+        } else if (error.code === 'PGRST301') {
+          errorMessage = 'Permission denied. Please check your database permissions.';
+        } else {
+          errorMessage = `Database error (${error.code}): ${error.message || 'Unknown error'}`;
+        }
+      }
+      
+      // Only show error toast if it's a real error (not just "no documents")
+      if (error?.code !== 'PGRST116') {
+        toast.error(errorMessage);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteDocument = async (docId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!confirm('Are you sure you want to delete this document?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('documents')
+        .delete()
+        .eq('id', docId)
+        .eq('owner_id', user?.id);
+
+      if (error) throw error;
+
+      toast.success('Document deleted');
+      loadDocuments();
+    } catch (error: any) {
+      console.error('Error deleting document:', error);
+      toast.error('Failed to delete document');
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/auth');
+  };
+
+  const filteredDocuments = documents.filter(doc =>
+    doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth
+  }
   return (
     <main className="min-h-screen relative overflow-hidden">
       {/* Background Decor */}
@@ -28,18 +255,33 @@ export default function Home() {
               <FileText className="text-white w-6 h-6" />
             </div>
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              WordClone
+              Word Studio
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <button className="w-10 h-10 rounded-full bg-white/50 backdrop-blur border border-white/60 flex items-center justify-center hover:bg-white/80 transition shadow-sm">
-              <Search className="w-5 h-5 text-slate-600" />
-            </button>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 p-[2px] cursor-pointer">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
-              </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search documents..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-64 rounded-full bg-white/50 backdrop-blur border border-white/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm"
+              />
             </div>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/50 backdrop-blur border border-white/60">
+              <User className="w-4 h-4 text-slate-600" />
+              <span className="text-sm font-medium text-slate-700">
+                {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
+              </span>
+            </div>
+            <button
+              onClick={handleSignOut}
+              className="w-10 h-10 rounded-full bg-white/50 backdrop-blur border border-white/60 flex items-center justify-center hover:bg-white/80 transition shadow-sm"
+              title="Sign out"
+            >
+              <LogOut className="w-5 h-5 text-slate-600" />
+            </button>
           </div>
         </header>
 
@@ -67,45 +309,104 @@ export default function Home() {
           </Link>
         </motion.section>
 
-        {/* Recent Documents */}
+        {/* Documents List */}
         <section className="animate-enter-delay">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
               <Clock className="w-5 h-5 text-slate-400" />
-              Recent Documents
+              {searchQuery ? `Search Results (${filteredDocuments.length})` : `My Documents (${documents.length})`}
             </h3>
-            <button className="text-sm text-indigo-600 font-medium hover:text-indigo-700">
-              View All
-            </button>
+            {documents.length > 0 && (
+              <button
+                onClick={loadDocuments}
+                className="text-sm text-indigo-600 font-medium hover:text-indigo-700"
+              >
+                Refresh
+              </button>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentDocs.map((doc, index) => (
-              <motion.div
-                key={doc.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + index * 0.1 }}
-                className="group glass-panel rounded-2xl p-6 cursor-pointer hover:shadow-lg hover:border-indigo-200/50 transition-all duration-300"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`p-3 rounded-xl ${doc.type === 'marketing' ? 'bg-orange-100 text-orange-600' :
-                      doc.type === 'finance' ? 'bg-blue-100 text-blue-600' :
-                        'bg-green-100 text-green-600'
-                    }`}>
-                    <FileText className="w-6 h-6" />
-                  </div>
-                  <button className="p-2 hover:bg-slate-100 rounded-full transition-colors opacity-0 group-hover:opacity-100">
-                    <MoreHorizontal className="w-5 h-5 text-slate-400" />
+          {filteredDocuments.length === 0 && !loading ? (
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-500 text-lg mb-2">
+                {searchQuery ? 'No documents found' : 'No documents yet'}
+              </p>
+              <p className="text-slate-400 text-sm mb-6">
+                {searchQuery ? 'Try a different search term' : 'Create your first document to get started'}
+              </p>
+              {!searchQuery && (
+                <Link href="/editor/new">
+                  <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full font-medium shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transform hover:-translate-y-1 transition-all duration-200">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Create New Document
                   </button>
-                </div>
-                <h4 className="text-lg font-semibold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">
-                  {doc.title}
-                </h4>
-                <p className="text-sm text-slate-500">Edited {doc.date}</p>
-              </motion.div>
-            ))}
-          </div>
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredDocuments.map((doc, index) => (
+                <Link key={doc.id} href={`/editor/${doc.id}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="group glass-panel rounded-2xl p-0 overflow-hidden cursor-pointer hover:shadow-lg hover:border-indigo-200/50 transition-all duration-300"
+                  >
+                    {/* Image preview */}
+                    {doc.content?.imageUrl ? (
+                      <div className="h-40 w-full overflow-hidden">
+                        <img
+                          src={doc.content.imageUrl}
+                          alt={doc.title || 'Document'}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-40 w-full bg-gradient-to-br from-indigo-100 via-purple-50 to-white flex items-center justify-center text-indigo-400">
+                        <FileText className="w-10 h-10" />
+                      </div>
+                    )}
+
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="p-3 rounded-xl bg-indigo-100 text-indigo-600">
+                          <FileText className="w-6 h-6" />
+                        </div>
+                        {doc.owner_id === user.id && (
+                          <button
+                            onClick={(e) => handleDeleteDocument(doc.id, e)}
+                            className="p-2 hover:bg-red-100 rounded-full transition-colors opacity-0 group-hover:opacity-100 text-red-500"
+                            title="Delete document"
+                          >
+                            <MoreHorizontal className="w-5 h-5" />
+                          </button>
+                        )}
+                      </div>
+
+                      <h4 className="text-lg font-semibold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                        {doc.title || 'Untitled Document'}
+                      </h4>
+                      {doc.content?.description && (
+                        <p className="text-sm text-slate-500 line-clamp-2 mb-2">
+                          {doc.content.description}
+                        </p>
+                      )}
+                      <p className="text-sm text-slate-500">
+                        {formatDistanceToNow(new Date(doc.updated_at), { addSuffix: true })}
+                      </p>
+                      {doc.profiles && (
+                        <p className="text-xs text-slate-400 mt-1">
+                          by {doc.profiles.full_name || doc.profiles.email || 'Unknown'}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </main>
