@@ -440,7 +440,6 @@ export default function MsWordEditor({ documentId: propDocumentId }: MsWordEdito
                 toast.success('Document saved');
                 console.log('Document saved successfully');
             } else {
-                // Update existing document
                 console.log('Updating document:', documentId);
                 
                 // Get combined content for document metadata
@@ -635,11 +634,6 @@ export default function MsWordEditor({ documentId: propDocumentId }: MsWordEdito
         <div className="flex h-screen overflow-hidden bg-[#0a0a0a]">
             {/* Sidebar */}
             <Sidebar activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem} />
-
-            {/* Media Library Panel */}
-            {activeSidebarItem === 'media' && (
-                <MediaLibraryPanel isOpen={true} />
-            )}
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col overflow-hidden">

@@ -11,12 +11,6 @@ interface SidebarProps {
 
 const SIDEBAR_ITEMS = [
     { id: 'pages', icon: Home, label: 'Pages' },
-    { id: 'media', icon: Image, label: 'Media' },
-    { id: 'charts', icon: BarChart3, label: 'Charts' },
-    { id: 'ai-writer', icon: Wand2, label: 'AI Writer' },
-    { id: 'settings', icon: Settings, label: 'Settings' },
-    { id: 'text', icon: Type, label: 'Text' },
-    { id: 'upload', icon: Upload, label: 'Upload' },
 ];
 
 export function Sidebar({ activeItem = 'pages', onItemClick }: SidebarProps) {
