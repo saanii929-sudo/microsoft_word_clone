@@ -53,7 +53,6 @@ export function TopBar({
                         {title}
                     </div>
                 )}
-                <span className="text-gray-500 text-sm">Saved just now</span>
             </div>
 
             {/* Right: Action Buttons */}
@@ -62,36 +61,17 @@ export function TopBar({
                     variant="ghost"
                     size="sm"
                     onClick={onPreview}
-                    className="h-9 px-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
+                    className="h-9 px-4 rounded-full bg-white/5 hover:cursor-pointer border border-white/10 text-white hover:bg-white/10 transition-all"
                 >
                     <Eye size={16} className="mr-2" />
                     Preview
                 </Button>
 
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onEnhanced}
-                    className="h-9 px-4 rounded-full bg-purple-600/20 border border-purple-500/30 text-purple-300 hover:bg-purple-600/30 transition-all"
-                >
-                    <Sparkles size={16} className="mr-2" />
-                    Enhanced
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onShowCustomization}
-                    className="h-9 px-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
-                >
-                    <SettingsIcon size={16} className="mr-2" />
-                    Customize
-                </Button>
 
                 <Button
                     size="sm"
                     onClick={onGenerateAIMedia}
-                    className="h-9 px-5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 font-medium shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50"
+                    className="h-9 px-4 rounded-full bg-white/5 hover:cursor-pointer border border-white/10 text-white hover:bg-white/10 transition-all"
                 >
                     <Sparkles size={16} className="mr-2" />
                     AI Media
@@ -100,7 +80,7 @@ export function TopBar({
                 <Button
                     size="sm"
                     onClick={onShare}
-                    className="h-9 px-5 rounded-full bg-gradient-to-r from-pink-600 to-amber-600 text-white hover:from-pink-700 hover:to-amber-700 font-medium shadow-lg shadow-pink-500/30 transition-all hover:shadow-pink-500/50"
+                    className="h-9 px-4 rounded-full hover:cursor-pointer bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
                 >
                     <Share2 size={16} className="mr-2" />
                     Share

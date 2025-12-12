@@ -19,7 +19,7 @@ export function Sidebar({ activeItem = 'pages', onItemClick }: SidebarProps) {
     return (
         <div
             className={cn(
-                "h-full bg-gradient-to-b from-[#1A1A1A] to-[#0F0F0F] border-r border-white/10 flex flex-col items-start py-4 gap-2 transition-all duration-300 ease-in-out",
+                "h-full bg-[#1A1A1A] border-r border-white/10 flex flex-col items-start py-4 gap-2 transition-all duration-300 ease-in-out",
                 isExpanded ? "w-48" : "w-[60px]"
             )}
             onMouseEnter={() => setIsExpanded(true)}
@@ -36,13 +36,13 @@ export function Sidebar({ activeItem = 'pages', onItemClick }: SidebarProps) {
                         className={cn(
                             "w-full h-12 flex items-center gap-3 px-3 rounded-r-xl transition-all duration-300 relative group",
                             isActive
-                                ? "bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-white"
+                                ? " bg-purple-600/20 text-white"
                                 : "text-gray-400 hover:bg-white/5 hover:text-white"
                         )}
                     >
                         <div className={cn(
                             "w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-300",
-                            isActive && "bg-gradient-to-br from-purple-600 to-pink-600 shadow-lg shadow-purple-500/50"
+                            isActive && "  shadow-lg shadow-purple-500/50"
                         )}>
                             <Icon size={18} />
                         </div>
@@ -55,7 +55,7 @@ export function Sidebar({ activeItem = 'pages', onItemClick }: SidebarProps) {
                         </span>
 
                         {isActive && (
-                            <div className="absolute left-0 w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-r-full" />
+                            <div className="absolute left-0 w-1 h-8 bg-purple-600  rounded-r-full" />
                         )}
                     </button>
                 );
