@@ -4,6 +4,7 @@ import { Save, Eye, Sparkles, Settings as SettingsIcon, Share2 } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface TopBarProps {
     documentTitle?: string;
@@ -16,7 +17,7 @@ interface TopBarProps {
 }
 
 export function TopBar({
-    documentTitle = "Untitled Document",
+    documentTitle,
     onTitleChange,
     onPreview,
     onEnhanced,
@@ -24,8 +25,9 @@ export function TopBar({
     onGenerateAIMedia,
     onShare
 }: TopBarProps) {
+    const t = useTranslations('Editor');
     const [isEditingTitle, setIsEditingTitle] = useState(false);
-    const [title, setTitle] = useState(documentTitle);
+    const [title, setTitle] = useState(documentTitle || t('untitled'));
 
     const handleTitleSave = () => {
         setIsEditingTitle(false);
@@ -33,7 +35,7 @@ export function TopBar({
     };
 
     return (
-        <div className="h-16 bg-gradient-to-r from-[#1A1A1A]/80 to-[#252525]/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-6">
+        <div className="h-16 bg-[#1A1A1A]/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-6">
             {/* Left: Document Title */}
             <div className="flex items-center gap-4">
                 {isEditingTitle ? (
@@ -64,7 +66,7 @@ export function TopBar({
                     className="h-9 px-4 rounded-full bg-white/5 hover:cursor-pointer border border-white/10 text-white hover:bg-white/10 transition-all"
                 >
                     <Eye size={16} className="mr-2" />
-                    Preview
+                    {t('preview')}
                 </Button>
 
 
@@ -74,7 +76,7 @@ export function TopBar({
                     className="h-9 px-4 rounded-full bg-white/5 hover:cursor-pointer border border-white/10 text-white hover:bg-white/10 transition-all"
                 >
                     <Sparkles size={16} className="mr-2" />
-                    AI Media
+                    {t('aiMedia')}
                 </Button>
 
                 <Button
@@ -83,7 +85,7 @@ export function TopBar({
                     className="h-9 px-4 rounded-full hover:cursor-pointer bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
                 >
                     <Share2 size={16} className="mr-2" />
-                    Share
+                    {t('share')}
                 </Button>
             </div>
         </div>

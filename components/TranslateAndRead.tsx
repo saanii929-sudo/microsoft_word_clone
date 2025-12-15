@@ -20,24 +20,9 @@ interface TranslateAndReadProps {
   onTextSelected?: (text: string) => void;
 }
 
-const languages = [
-  { code: 'en-US', name: 'English (US)' },
-  { code: 'en-GB', name: 'English (UK)' },
-  { code: 'es-ES', name: 'Spanish' },
-  { code: 'fr-FR', name: 'French' },
-  { code: 'de-DE', name: 'German' },
-  { code: 'it-IT', name: 'Italian' },
-  { code: 'pt-PT', name: 'Portuguese' },
-  { code: 'ru-RU', name: 'Russian' },
-  { code: 'ja-JP', name: 'Japanese' },
-  { code: 'ko-KR', name: 'Korean' },
-  { code: 'zh-CN', name: 'Chinese (Simplified)' },
-  { code: 'ar-SA', name: 'Arabic' },
-  { code: 'hi-IN', name: 'Hindi' },
-  { code: 'nl-NL', name: 'Dutch' },
-  { code: 'pl-PL', name: 'Polish' },
-  { code: 'tr-TR', name: 'Turkish' },
-];
+import { SUPPORTED_LANGUAGES } from '@/lib/constants/languages';
+
+const languages = SUPPORTED_LANGUAGES;
 
 export function TranslateAndRead({ editor, selectedText: externalSelectedText, onTextSelected }: TranslateAndReadProps) {
   const [selectedText, setSelectedText] = useState(externalSelectedText || '');
@@ -75,23 +60,23 @@ export function TranslateAndRead({ editor, selectedText: externalSelectedText, o
     const handleSelectionUpdate = () => {
       const { state } = editor;
       const { selection } = state;
-      
+
       if (!selection.empty) {
         const text = state.doc.textBetween(selection.from, selection.to, ' ');
         if (text.trim()) {
           setSelectedText(text);
           onTextSelected?.(text);
-          
+
           // Calculate popup position
           const { view } = editor;
           const { from } = selection;
           const coords = view.coordsAtPos(from);
-          
+
           setPopupPosition({
             top: coords.top + window.scrollY - 10,
             left: coords.left + window.scrollX + (coords.right - coords.left) / 2,
           });
-          
+
           setShowPopup(true);
         } else {
           setShowPopup(false);
@@ -111,15 +96,15 @@ export function TranslateAndRead({ editor, selectedText: externalSelectedText, o
         const text = selection.toString().trim();
         setSelectedText(text);
         onTextSelected?.(text);
-        
+
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
-        
+
         setPopupPosition({
           top: rect.top + window.scrollY - 10,
           left: rect.left + window.scrollX + (rect.width / 2),
         });
-        
+
         setShowPopup(true);
       } else if (!editor.state.selection.empty) {
         // Fallback to editor selection
@@ -177,7 +162,7 @@ export function TranslateAndRead({ editor, selectedText: externalSelectedText, o
 
   const handleReadAloud = () => {
     const textToRead = translatedText || selectedText;
-    
+
     if (!textToRead.trim()) {
       toast.error('No text to read');
       return;
@@ -197,10 +182,10 @@ export function TranslateAndRead({ editor, selectedText: externalSelectedText, o
     }
 
     const utterance = new SpeechSynthesisUtterance(textToRead);
-    
+
     // Set language for speech
     utterance.lang = targetLanguage;
-    
+
     // Try to find a voice matching the target language
     const voices = window.speechSynthesis.getVoices();
     const matchingVoice = voices.find(v => v.lang.startsWith(targetLanguage.split('-')[0]));

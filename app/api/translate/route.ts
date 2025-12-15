@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getLanguageName } from '@/lib/constants/languages';
 
 export async function POST(request: NextRequest) {
     try {
@@ -31,32 +32,14 @@ export async function POST(request: NextRequest) {
         }
 
         // Language code mapping
-        const languageNames: { [key: string]: string } = {
-            'en': 'English',
-            'es': 'Spanish',
-            'fr': 'French',
-            'de': 'German',
-            'it': 'Italian',
-            'pt': 'Portuguese',
-            'ru': 'Russian',
-            'ja': 'Japanese',
-            'ko': 'Korean',
-            'zh': 'Chinese',
-            'ar': 'Arabic',
-            'hi': 'Hindi',
-            'nl': 'Dutch',
-            'pl': 'Polish',
-            'tr': 'Turkish',
-        };
-
-        const targetLangName = languageNames[targetLanguage.split('-')[0]] || targetLanguage;
-        const sourceLangName = sourceLanguage ? (languageNames[sourceLanguage.split('-')[0]] || sourceLanguage) : 'the source language';
+        const targetLangName = getLanguageName(targetLanguage);
+        const sourceLangName = sourceLanguage ? getLanguageName(sourceLanguage) : 'the source language';
 
         const systemInstruction = `You are a professional translator. Translate the following text from ${sourceLangName} to ${targetLangName}. Provide only the translation, no explanations or additional text. Maintain the original formatting, tone, and meaning.`;
 
         let modelName = 'gemini-2.5-pro';
         let apiVersion = 'v1';
-        
+
         let response = await fetch(
             `https://generativelanguage.googleapis.com/${apiVersion}/models/${modelName}:generateContent?key=${geminiApiKey}`,
             {
@@ -79,7 +62,7 @@ export async function POST(request: NextRequest) {
         );
 
         let errorData = {};
-        
+
         // Handle response
         if (!response.ok) {
             try {
@@ -92,7 +75,7 @@ export async function POST(request: NextRequest) {
             if (response.status === 404) {
                 console.log(`${modelName} not found, trying gemini-1.0-pro-latest...`);
                 modelName = 'gemini-1.0-pro-latest';
-                
+
                 response = await fetch(
                     `https://generativelanguage.googleapis.com/${apiVersion}/models/${modelName}:generateContent?key=${geminiApiKey}`,
                     {
@@ -113,7 +96,7 @@ export async function POST(request: NextRequest) {
                         }),
                     }
                 );
-                
+
                 if (!response.ok) {
                     try {
                         errorData = await response.json();
@@ -127,7 +110,7 @@ export async function POST(request: NextRequest) {
         // Final error check
         if (!response.ok) {
             console.error('Gemini API Error:', errorData);
-            
+
             // More specific error messages
             if (response.status === 401 || response.status === 403) {
                 return NextResponse.json(
@@ -138,7 +121,7 @@ export async function POST(request: NextRequest) {
                     { status: 401 }
                 );
             }
-            
+
             if (response.status === 404) {
                 return NextResponse.json(
                     {
@@ -149,7 +132,7 @@ export async function POST(request: NextRequest) {
                     { status: 404 }
                 );
             }
-            
+
             return NextResponse.json(
                 {
                     error: 'Translation failed',
@@ -165,9 +148,9 @@ export async function POST(request: NextRequest) {
         if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
             console.error('Invalid Gemini response:', data);
             return NextResponse.json(
-                { 
-                    error: 'Invalid response from Gemini API', 
-                    details: data 
+                {
+                    error: 'Invalid response from Gemini API',
+                    details: data
                 },
                 { status: 500 }
             );

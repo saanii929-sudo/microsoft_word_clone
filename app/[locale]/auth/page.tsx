@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/navigation';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { BookOpen, AlertCircle, ArrowRight, Github } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,6 +22,9 @@ export default function Auth() {
   const [isSupabaseConfigured, setIsSupabaseConfigured] = useState(true);
   const router = useRouter();
   const { user } = useAuth();
+
+  const t = useTranslations('Auth');
+  const tCommon = useTranslations('Common');
 
   useEffect(() => {
     // Check if Supabase keys are configured and test connection
@@ -63,23 +67,23 @@ export default function Auth() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate inputs
     if (!email.trim()) {
       toast.error('Please enter your email');
       return;
     }
-    
+
     if (!password.trim()) {
       toast.error('Please enter your password');
       return;
     }
-    
+
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters');
       return;
     }
-    
+
     if (!isLogin && !fullName.trim()) {
       toast.error('Please enter your full name');
       return;
@@ -103,7 +107,7 @@ export default function Auth() {
 
         if (error) {
           console.error('Sign in error:', error);
-          
+
           // Provide more specific error messages
           if (error.message.includes('Invalid login credentials')) {
             throw new Error('Invalid email or password. Please check your credentials or sign up if you don\'t have an account.');
@@ -115,7 +119,7 @@ export default function Auth() {
         }
 
         console.log('Sign in successful:', data);
-        toast.success('Welcome back!');
+        toast.success(t('welcomeBack'));
         // Wait a bit for session to be set
         setTimeout(() => {
           router.push('/');
@@ -139,7 +143,7 @@ export default function Auth() {
         }
 
         console.log('Sign up response:', data);
-        
+
         // Check if email confirmation is required
         if (data.user && !data.session) {
           toast.success('Account created! Please check your email to verify your account.');
@@ -148,7 +152,7 @@ export default function Auth() {
           setPassword('');
           setFullName('');
         } else if (data.session) {
-          toast.success('Account created successfully!');
+          toast.success(tCommon('success'));
           router.push('/');
         } else {
           toast.success('Account created! Please check your email.');
@@ -156,14 +160,14 @@ export default function Auth() {
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      
+
       // Handle specific error types with helpful messages
       if (error?.message?.includes('Invalid API key') || error?.message?.includes('JWT')) {
         toast.error('Invalid Supabase API key. Please check your Supabase dashboard and update the API key.');
         setIsSupabaseConfigured(false);
       } else if (error?.message?.includes('Invalid login credentials') || error?.message?.includes('Invalid email or password')) {
         // More helpful message for login errors
-        const message = isLogin 
+        const message = isLogin
           ? 'Invalid email or password. Please check your credentials or click "Sign up" if you don\'t have an account yet.'
           : error.message || 'Invalid email or password';
         toast.error(message);
@@ -217,10 +221,10 @@ export default function Auth() {
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-br from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                {isLogin ? 'Welcome Back' : 'Create Account'}
+                {isLogin ? t('welcomeBack') : t('createAccount')}
               </h1>
               <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">
-                {isLogin ? 'Enter your details to access your workspace' : 'Start your creative journey today'}
+                {isLogin ? t('enterDetails') : 'Start your creative journey today'}
               </p>
             </div>
           </div>
@@ -242,7 +246,7 @@ export default function Auth() {
                   className="text-amber-900 dark:text-amber-100 p-0 h-auto mt-2 font-semibold hover:underline"
                   onClick={handleDemoLogin}
                 >
-                  Enter Demo Mode &rarr;
+                  {t('demoMode')} &rarr;
                 </Button>
               </div>
             </motion.div>
@@ -257,7 +261,7 @@ export default function Auth() {
                   exit={{ opacity: 0, height: 0 }}
                   className="space-y-2 overflow-hidden"
                 >
-                  <Label htmlFor="fullName" className="text-xs font-semibold uppercase text-slate-500">Full Name</Label>
+                  <Label htmlFor="fullName" className="text-xs font-semibold uppercase text-slate-500">{t('fullName')}</Label>
                   <Input
                     id="fullName"
                     type="text"
@@ -272,7 +276,7 @@ export default function Auth() {
             </AnimatePresence>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs font-semibold uppercase text-slate-500">Email Address</Label>
+              <Label htmlFor="email" className="text-xs font-semibold uppercase text-slate-500">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -286,7 +290,7 @@ export default function Auth() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label htmlFor="password" className="text-xs font-semibold uppercase text-slate-500">Password</Label>
+                <Label htmlFor="password" className="text-xs font-semibold uppercase text-slate-500">{t('password')}</Label>
                 {isLogin && <a href="#" className="text-xs text-indigo-500 hover:text-indigo-600 font-medium">Forgot?</a>}
               </div>
               <Input
@@ -309,11 +313,11 @@ export default function Auth() {
               {loading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
-                  Processing...
+                  {tCommon('loading')}
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2">
-                  {isLogin ? 'Sign In' : 'Create Account'}
+                  {isLogin ? t('signIn') : t('signUp')}
                   <ArrowRight size={16} />
                 </div>
               )}
@@ -322,12 +326,12 @@ export default function Auth() {
 
           <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-white/10 text-center">
             <p className="text-sm text-slate-500">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}
+              {isLogin ? t('dontHaveAccount') : t('alreadyHaveAccount')}
               <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="ml-2 font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors"
               >
-                {isLogin ? 'Sign up' : 'Sign in'}
+                {isLogin ? t('signUp') : t('signIn')}
               </button>
             </p>
           </div>

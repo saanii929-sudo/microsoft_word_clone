@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { TranslateAndRead } from './TranslateAndRead';
+import { useTranslations } from 'next-intl';
 
 interface ImmersiveReaderProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ interface ImmersiveReaderProps {
 }
 
 export function ImmersiveReader({ isOpen, onClose, content, contextText }: ImmersiveReaderProps) {
+    const t = useTranslations('ImmersiveReader');
     const [isPlaying, setIsPlaying] = useState(false);
     const [theme, setTheme] = useState<'light' | 'dark' | 'sepia'>('light');
     const [textSize, setTextSize] = useState(24);
@@ -83,7 +85,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
         const loadVoices = () => {
             const availableVoices = window.speechSynthesis.getVoices();
             console.log('ImmersiveReader: Loaded voices', availableVoices.length);
-            
+
             if (availableVoices.length > 0) {
                 setVoices(availableVoices);
                 // Default to first English voice if no voice is selected
@@ -100,12 +102,12 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
 
         // Load voices immediately
         loadVoices();
-        
+
         // Also listen for when voices become available
         if (window.speechSynthesis.onvoiceschanged !== undefined) {
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
-        
+
         // Retry loading voices after a delay (some browsers load voices asynchronously)
         const retryTimer = setTimeout(loadVoices, 1000);
 
@@ -198,7 +200,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
     const renderTranslateAndRead = () => {
         if (selectedText) {
             return (
-                <TranslateAndRead 
+                <TranslateAndRead
                     selectedText={selectedText}
                     onTextSelected={setSelectedText}
                 />
@@ -232,7 +234,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                         >
                             <X size={24} />
                         </Button>
-                        <h2 className="text-xl font-semibold font-display">Immersive Reader</h2>
+                        <h2 className="text-xl font-semibold font-display">{t('title')}</h2>
                     </div>
 
                     <div className="flex items-center gap-6">
@@ -265,7 +267,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                 onClick={() => setLineSpacing(Math.max(1.2, lineSpacing - 0.2))}
                                 className="h-8 px-3 rounded-full text-xs"
                             >
-                                Tighter
+                                {t('tabs.textPrefs')}
                             </Button>
                             <span className="text-sm font-medium w-8 text-center">{lineSpacing.toFixed(1)}</span>
                             <Button
@@ -274,7 +276,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                 onClick={() => setLineSpacing(Math.min(3, lineSpacing + 0.2))}
                                 className="h-8 px-3 rounded-full text-xs"
                             >
-                                Wider
+                                {t('tabs.textPrefs')}
                             </Button>
                         </div>
 
@@ -286,7 +288,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                             className="rounded-full"
                         >
                             <Type size={16} className="mr-2" />
-                            Line Focus
+                            {t('lineFocus')}
                         </Button>
 
                         {/* Translation Language Selector */}
@@ -294,7 +296,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                             <Languages size={16} className="text-slate-600 dark:text-slate-400" />
                             <Select value={translationLanguage} onValueChange={setTranslationLanguage}>
                                 <SelectTrigger className="w-40 h-9 text-xs bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600">
-                                    <SelectValue placeholder="Translate to" />
+                                    <SelectValue placeholder={t('translateTo')} />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-2xl">
                                     <SelectItem value="en-US">English (US)</SelectItem>
@@ -313,6 +315,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                     <SelectItem value="nl-NL">Dutch</SelectItem>
                                     <SelectItem value="pl-PL">Polish</SelectItem>
                                     <SelectItem value="tr-TR">Turkish</SelectItem>
+                                    <SelectItem value="he-IL">Hebrew</SelectItem>
                                 </SelectContent>
                             </Select>
                             <Button
@@ -325,12 +328,12 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                 {isTranslating ? (
                                     <>
                                         <Loader2 size={14} className="mr-1 animate-spin" />
-                                        Translating...
+                                        {t('translating')}
                                     </>
                                 ) : (
                                     <>
                                         <Languages size={14} className="mr-1" />
-                                        Translate
+                                        {t('translate')}
                                     </>
                                 )}
                             </Button>
@@ -340,7 +343,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                     size="sm"
                                     onClick={() => {
                                         setTranslatedContent(null);
-                                        toast.info('Showing original text');
+                                        toast.info(t('showingOriginal'));
                                     }}
                                     className="h-9 px-2 text-xs"
                                 >
@@ -359,12 +362,12 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                 className="group flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-0 hover:from-indigo-600 hover:to-purple-600 mr-4"
                             >
                                 <Wand2 size={14} className={isGeneratingBg ? "animate-spin" : "group-hover:rotate-12 transition-transform"} />
-                                <span>{isGeneratingBg ? "Generating..." : "Magic Background"}</span>
+                                <span>{isGeneratingBg ? t('generating') : t('magicBackground')}</span>
                             </Button>
 
-                            <button onClick={() => { setTheme('light'); setBgImage(null); }} className="w-6 h-6 rounded-full bg-white border border-slate-300 shadow-sm" title="Light" />
-                            <button onClick={() => { setTheme('sepia'); setBgImage(null); }} className="w-6 h-6 rounded-full bg-[#f4ecd8] border border-[#d3c5a3] shadow-sm" title="Sepia" />
-                            <button onClick={() => { setTheme('dark'); setBgImage(null); }} className="w-6 h-6 rounded-full bg-slate-900 border border-slate-700 shadow-sm" title="Dark" />
+                            <button onClick={() => { setTheme('light'); setBgImage(null); }} className="w-6 h-6 rounded-full bg-white border border-slate-300 shadow-sm" title={t('themes.light')} />
+                            <button onClick={() => { setTheme('sepia'); setBgImage(null); }} className="w-6 h-6 rounded-full bg-[#f4ecd8] border border-[#d3c5a3] shadow-sm" title={t('themes.sepia')} />
+                            <button onClick={() => { setTheme('dark'); setBgImage(null); }} className="w-6 h-6 rounded-full bg-slate-900 border border-slate-700 shadow-sm" title={t('themes.dark')} />
                         </div>
                     </div>
                 </div>
@@ -459,51 +462,51 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                 }}
                             >
                                 <SelectTrigger className="w-full min-w-[300px] h-12 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 text-slate-900 dark:text-slate-100 font-semibold shadow-md hover:shadow-lg transition-all relative z-10">
-                                    <SelectValue placeholder={voices.length > 0 ? "Select Voice" : "Loading voices..."} />
+                                    <SelectValue placeholder={voices.length > 0 ? t('selectVoice') : t('loadingVoices')} />
                                 </SelectTrigger>
-                                <SelectContent 
+                                <SelectContent
                                     className="max-h-[450px] !bg-white dark:!bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-2xl !opacity-100"
                                     style={{ zIndex: 10000 }}
                                 >
                                     {voices.length === 0 ? (
                                         <div className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
-                                            <div className="animate-pulse">Loading voices...</div>
+                                            <div className="animate-pulse">{t('loadingVoices')}</div>
                                         </div>
                                     ) : (
                                         (() => {
                                             // Enhanced voice categorization
                                             const maleVoices = voices.filter(v => {
                                                 const name = v.name.toLowerCase();
-                                                return name.includes('male') || 
-                                                       name.includes('man') ||
-                                                       name.includes('david') ||
-                                                       name.includes('daniel') ||
-                                                       name.includes('james') ||
-                                                       name.includes('thomas') ||
-                                                       name.includes('mark') ||
-                                                       name.includes('alex') ||
-                                                       name.includes('male voice') ||
-                                                       name.includes('google uk english male') ||
-                                                       name.includes('microsoft david');
+                                                return name.includes('male') ||
+                                                    name.includes('man') ||
+                                                    name.includes('david') ||
+                                                    name.includes('daniel') ||
+                                                    name.includes('james') ||
+                                                    name.includes('thomas') ||
+                                                    name.includes('mark') ||
+                                                    name.includes('alex') ||
+                                                    name.includes('male voice') ||
+                                                    name.includes('google uk english male') ||
+                                                    name.includes('microsoft david');
                                             });
-                                            
+
                                             const femaleVoices = voices.filter(v => {
                                                 const name = v.name.toLowerCase();
-                                                return name.includes('female') || 
-                                                       name.includes('woman') ||
-                                                       name.includes('samantha') ||
-                                                       name.includes('karen') ||
-                                                       name.includes('susan') ||
-                                                       name.includes('zira') ||
-                                                       name.includes('hazel') ||
-                                                       name.includes('linda') ||
-                                                       name.includes('female voice') ||
-                                                       name.includes('google uk english female') ||
-                                                       name.includes('microsoft zira') ||
-                                                       name.includes('microsoft hazel');
+                                                return name.includes('female') ||
+                                                    name.includes('woman') ||
+                                                    name.includes('samantha') ||
+                                                    name.includes('karen') ||
+                                                    name.includes('susan') ||
+                                                    name.includes('zira') ||
+                                                    name.includes('hazel') ||
+                                                    name.includes('linda') ||
+                                                    name.includes('female voice') ||
+                                                    name.includes('google uk english female') ||
+                                                    name.includes('microsoft zira') ||
+                                                    name.includes('microsoft hazel');
                                             });
-                                            
-                                            const otherVoices = voices.filter(v => 
+
+                                            const otherVoices = voices.filter(v =>
                                                 !maleVoices.includes(v) && !femaleVoices.includes(v)
                                             );
 
@@ -515,8 +518,8 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                                                 🔊 Female Voices ({femaleVoices.length})
                                                             </div>
                                                             {femaleVoices.map(v => (
-                                                                <SelectItem 
-                                                                    key={v.name} 
+                                                                <SelectItem
+                                                                    key={v.name}
                                                                     value={v.name}
                                                                     className="cursor-pointer hover:bg-pink-50/80 dark:hover:bg-pink-900/30 focus:bg-pink-100 dark:focus:bg-pink-900/40 transition-colors"
                                                                 >
@@ -540,8 +543,8 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                                                 🔊 Male Voices ({maleVoices.length})
                                                             </div>
                                                             {maleVoices.map(v => (
-                                                                <SelectItem 
-                                                                    key={v.name} 
+                                                                <SelectItem
+                                                                    key={v.name}
                                                                     value={v.name}
                                                                     className="cursor-pointer hover:bg-blue-50/80 dark:hover:bg-blue-900/30 focus:bg-blue-100 dark:focus:bg-blue-900/40 transition-colors"
                                                                 >
@@ -565,8 +568,8 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                                                                 🔊 Other Voices ({otherVoices.length})
                                                             </div>
                                                             {otherVoices.map(v => (
-                                                                <SelectItem 
-                                                                    key={v.name} 
+                                                                <SelectItem
+                                                                    key={v.name}
                                                                     value={v.name}
                                                                     className="cursor-pointer hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors"
                                                                 >
@@ -616,7 +619,7 @@ export function ImmersiveReader({ isOpen, onClose, content, contextText }: Immer
                         </div>
 
                         <div className="flex-1 flex items-center gap-4">
-                            <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">Speed: {speed}x</span>
+                            <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">{t('speed')}: {speed}x</span>
                             <Slider
                                 value={[speed]}
                                 min={0.5}

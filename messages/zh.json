@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "加载中...",
+        "save": "保存",
+        "cancel": "取消",
+        "delete": "删除",
+        "edit": "编辑",
+        "create": "创建",
+        "search": "搜索",
+        "settings": "设置",
+        "language": "语言",
+        "translate": "翻译",
+        "readAloud": "朗读",
+        "copy": "复制",
+        "copied": "已复制",
+        "error": "错误",
+        "success": "成功",
+        "refresh": "刷新",
+        "signOut": "登出",
+        "myDocuments": "我的文档",
+        "searchResults": "搜索结果",
+        "deleteConfirm": "您确定要删除此文档吗？",
+        "deleteSuccess": "文档已删除",
+        "deleteError": "删除文档失败",
+        "loadError": "加载文档失败",
+        "noDocuments": "暂无文档",
+        "noDocumentsFound": "未找到文档",
+        "startPrompt": "创建您的第一个文档以开始",
+        "searchPrompt": "尝试其他搜索词"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "搜索文档...",
+        "heroTitle": "您今天想创作什么？",
+        "heroSubtitle": "体验下一代文档编辑。美观、快速且无干扰。",
+        "createNew": "新建文档"
+    },
+    "Auth": {
+        "welcomeBack": "欢迎回来",
+        "createAccount": "创建账户",
+        "enterDetails": "输入您的详细信息以开始",
+        "fullName": "全名",
+        "email": "电子邮件",
+        "password": "密码",
+        "signIn": "登录",
+        "signUp": "注册",
+        "orContinueWith": "或继续使用",
+        "dontHaveAccount": "没有账户？",
+        "alreadyHaveAccount": "已有账户？",
+        "demoMode": "演示模式",
+        "demoModeDesc": "无需创建账户即可试用"
+    },
+    "DocumentCreation": {
+        "title": "新建文档",
+        "subtitle": "选择您的开始方式",
+        "blankDoc": "空白文档",
+        "blankDesc": "从头开始",
+        "aiDoc": "AI 生成",
+        "aiDesc": "让 AI 帮助您写作",
+        "importDoc": "导入文档",
+        "importDesc": "上传 DOCX, PDF 等",
+        "docTitle": "文档标题",
+        "docTitlePlaceholder": "例如：项目提案",
+        "create": "创建文档",
+        "creating": "创建中..."
+    },
+    "Editor": {
+        "newDocument": "新文档",
+        "untitled": "无标题",
+        "saving": "保存中...",
+        "saved": "已保存",
+        "share": "分享",
+        "preview": "预览",
+        "aiMedia": "AI 媒体",
+        "export": "导出"
+    },
+    "Sidebar": {
+        "pages": "页面"
+    },
+    "StatusBar": {
+        "totalWords": "总字数：",
+        "currentPage": "当前页面：",
+        "page": "页",
+        "of": "/",
+        "zoom": "缩放",
+        "reset": "重置"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "选择语言"
+    },
+    "ImmersiveReader": {
+        "title": "沉浸式阅读器",
+        "backToEditor": "返回编辑器",
+        "tabs": {
+            "textPrefs": "文本偏好",
+            "grammarOpts": "语法选项",
+            "readingPrefs": "阅读偏好"
+        },
+        "themes": {
+            "light": "亮色",
+            "dark": "深色",
+            "sepia": "护眼",
+            "highContrast": "高对比度"
+        },
+        "textSize": "文字大小",
+        "font": "字体",
+        "theme": "主题",
+        "syllables": "音节",
+        "syllablesDesc": "显示音节断点",
+        "partsOfSpeech": "词性",
+        "partsOfSpeechDesc": "高亮名词、动词等",
+        "lineFocus": "行聚焦",
+        "focus": {
+            "none": "无",
+            "oneLine": "1 行",
+            "threeLines": "3 行",
+            "fiveLines": "5 行"
+        },
+        "selectVoice": "选择声音",
+        "loadingVoices": "正在加载声音...",
+        "magicBackground": "魔法背景",
+        "generating": "生成中...",
+        "translateTo": "翻译为...",
+        "translate": "翻译",
+        "translating": "翻译中...",
+        "showingOriginal": "显示原文",
+        "speed": "速度"
+    }
+}

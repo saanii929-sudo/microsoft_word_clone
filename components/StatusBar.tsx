@@ -2,6 +2,7 @@
 
 import { Minus, Plus, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 interface StatusBarProps {
     wordCount?: number;
@@ -18,6 +19,8 @@ export function StatusBar({
     zoom = 80,
     onZoomChange
 }: StatusBarProps) {
+    const t = useTranslations('StatusBar');
+
     const handleZoomIn = () => {
         if (zoom < 200) {
             onZoomChange?.(zoom + 10);
@@ -39,14 +42,14 @@ export function StatusBar({
             {/* Left: Word Count */}
             <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm">Total Words:</span>
+                    <span className="text-gray-500 text-sm">{t('totalWords')}</span>
                     <span className="text-white font-semibold text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                         {wordCount}
                     </span>
                 </div>
                 <div className="w-px h-6 bg-white/10" />
                 <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm">Current Page:</span>
+                    <span className="text-gray-500 text-sm">{t('currentPage')}</span>
                     <span className="text-white font-semibold">{Math.floor(wordCount / totalPages)}</span>
                 </div>
             </div>
@@ -54,10 +57,10 @@ export function StatusBar({
             {/* Right: Page & Zoom Controls */}
             <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm">Page</span>
+                    <span className="text-gray-500 text-sm">{t('page')}</span>
                     <div className="px-3 py-1 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30">
                         <span className="text-white font-semibold">{currentPage}</span>
-                        <span className="text-gray-400 mx-1">of</span>
+                        <span className="text-gray-400 mx-1">{t('of')}</span>
                         <span className="text-white font-semibold">{totalPages}</span>
                     </div>
                 </div>
@@ -65,7 +68,7 @@ export function StatusBar({
                 <div className="w-px h-6 bg-white/10" />
 
                 <div className="flex items-center gap-3">
-                    <span className="text-gray-500 text-sm">Zoom</span>
+                    <span className="text-gray-500 text-sm">{t('zoom')}</span>
                     <Button
                         variant="ghost"
                         size="sm"
@@ -92,7 +95,7 @@ export function StatusBar({
                         className="h-8 px-3 rounded-full text-gray-400 hover:text-white hover:bg-purple-600/20 transition-all"
                     >
                         <RotateCcw size={14} className="mr-1" />
-                        Reset
+                        {t('reset')}
                     </Button>
                 </div>
             </div>

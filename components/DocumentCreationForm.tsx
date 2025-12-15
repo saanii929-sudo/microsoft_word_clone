@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/navigation';
 import { motion } from 'framer-motion';
 import { Upload, X, Image as ImageIcon, Mic, MicOff, Loader2, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 interface DocumentCreationFormProps {
   onComplete?: (documentId: string) => void;
@@ -22,6 +23,9 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
   const [audioVoiceEnabled, setAudioVoiceEnabled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const t = useTranslations('DocumentCreation');
+  const tCommon = useTranslations('Common');
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -30,7 +34,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
         toast.error('Please select a valid image file');
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size must be less than 5MB');
@@ -38,7 +42,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
       }
 
       setImageFile(file);
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -59,7 +63,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
     try {
       // Check if storage bucket exists
       const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-      
+
       if (bucketError) {
         console.error('Error checking storage buckets:', bucketError);
         toast.error('Storage not configured. Please set up the storage bucket in Supabase dashboard.');
@@ -77,7 +81,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
       // Create a unique filename
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-      
+
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from('document-images')
@@ -109,7 +113,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast.error('Please sign in to create a document');
       return;
@@ -164,11 +168,11 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
         console.error('=== Document Creation Error ===');
         console.error('Raw error:', docError);
         console.error('Error type:', typeof docError);
-        
+
         let errorMessage = 'Failed to create document';
         let errorCode: string | null = null;
         let errorDetails: string | null = null;
-        
+
         // Extract error information
         if (docError && typeof docError === 'object') {
           const err = docError as any;
@@ -176,7 +180,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
           errorMessage = err.message || err.error_description || err.details || errorMessage;
           errorDetails = err.details || err.hint || null;
         }
-        
+
         // Try JSON stringify
         try {
           const errorStr = JSON.stringify(docError);
@@ -190,7 +194,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
         } catch (e) {
           console.error('Error stringifying error:', e);
         }
-        
+
         // Provide helpful error messages based on error code
         if (errorCode === '42P01') {
           errorMessage = 'Database tables not found. Please run the SQL migration in your Supabase dashboard.';
@@ -205,14 +209,14 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
         } else {
           errorMessage = 'Failed to create document. Please check your connection and try again.';
         }
-        
+
         if (errorDetails) {
           errorMessage += ` Details: ${errorDetails}`;
         }
-        
+
         console.error('Final error message:', errorMessage);
         console.error('Error code:', errorCode);
-        
+
         toast.error(errorMessage, {
           duration: 8000
         });
@@ -226,8 +230,8 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
       }
 
       console.log('Document created successfully! ID:', newDoc.id);
-      toast.success('Document created successfully!');
-      
+      toast.success(tCommon('success'));
+
       // Call onComplete callback if provided
       if (onComplete) {
         console.log('Calling onComplete callback with document ID:', newDoc.id);
@@ -257,22 +261,22 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
         className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8"
       >
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Create New Document</h1>
-          <p className="text-slate-500">Fill in the details to get started with your new document</p>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">{t('title')}</h1>
+          <p className="text-slate-500">{t('subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-semibold text-slate-700 mb-2">
-              Document Title <span className="text-red-500">*</span>
+              {t('docTitle')} <span className="text-red-500">*</span>
             </label>
             <input
               id="title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter document title..."
+              placeholder={t('docTitlePlaceholder')}
               required
               className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
             />
@@ -352,14 +356,12 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
             <button
               type="button"
               onClick={() => setAudioVoiceEnabled(!audioVoiceEnabled)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                audioVoiceEnabled ? 'bg-indigo-600' : 'bg-slate-300'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${audioVoiceEnabled ? 'bg-indigo-600' : 'bg-slate-300'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  audioVoiceEnabled ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${audioVoiceEnabled ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -371,7 +373,7 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
               onClick={() => router.push('/')}
               className="flex-1 px-6 py-3 rounded-lg border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition"
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
             <button
               type="submit"
@@ -381,11 +383,11 @@ export function DocumentCreationForm({ onComplete }: DocumentCreationFormProps) 
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Creating...
+                  {t('creating')}
                 </>
               ) : (
                 <>
-                  Create Document
+                  {t('create')}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}

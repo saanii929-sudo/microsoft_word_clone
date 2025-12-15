@@ -3,18 +3,20 @@
 import { Home, Image, BarChart3, Wand2, Settings, Type, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface SidebarProps {
     activeItem?: string;
     onItemClick?: (item: string) => void;
 }
 
-const SIDEBAR_ITEMS = [
-    { id: 'pages', icon: Home, label: 'Pages' },
-];
-
 export function Sidebar({ activeItem = 'pages', onItemClick }: SidebarProps) {
     const [isExpanded, setIsExpanded] = useState(false);
+    const t = useTranslations('Sidebar');
+
+    const SIDEBAR_ITEMS = [
+        { id: 'pages', icon: Home, label: t('pages') },
+    ];
 
     return (
         <div

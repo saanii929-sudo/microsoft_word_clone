@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "Đang tải...",
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "delete": "Xóa",
+        "edit": "Chỉnh sửa",
+        "create": "Tạo",
+        "search": "Tìm kiếm",
+        "settings": "Cài đặt",
+        "language": "Ngôn ngữ",
+        "translate": "Dịch",
+        "readAloud": "Đọc to",
+        "copy": "Sao chép",
+        "copied": "Đã sao chép",
+        "error": "Lỗi",
+        "success": "Thành công",
+        "refresh": "Làm mới",
+        "signOut": "Đăng xuất",
+        "myDocuments": "Tài liệu của tôi",
+        "searchResults": "Kết quả tìm kiếm",
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa tài liệu này không?",
+        "deleteSuccess": "Đã xóa tài liệu",
+        "deleteError": "Lỗi khi xóa tài liệu",
+        "loadError": "Lỗi khi tải tài liệu",
+        "noDocuments": "Chưa có tài liệu nào",
+        "noDocumentsFound": "Không tìm thấy tài liệu",
+        "startPrompt": "Tạo tài liệu đầu tiên của bạn để bắt đầu",
+        "searchPrompt": "Thử một thuật ngữ tìm kiếm khác"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "Tìm kiếm tài liệu...",
+        "heroTitle": "Bạn sẽ tạo gì hôm nay?",
+        "heroSubtitle": "Trải nghiệm thế hệ chỉnh sửa tài liệu tiếp theo. Đẹp, nhanh và không gây xao nhãng.",
+        "createNew": "Tạo Tài Liệu Mới"
+    },
+    "Auth": {
+        "welcomeBack": "Chào mừng trở lại",
+        "createAccount": "Tạo tài khoản",
+        "enterDetails": "Nhập thông tin chi tiết của bạn để bắt đầu",
+        "fullName": "Họ và Tên",
+        "email": "Email",
+        "password": "Mật khẩu",
+        "signIn": "Đăng nhập",
+        "signUp": "Đăng ký",
+        "orContinueWith": "Hoặc tiếp tục với",
+        "dontHaveAccount": "Chưa có tài khoản?",
+        "alreadyHaveAccount": "Đã có tài khoản?",
+        "demoMode": "Chế độ Demo",
+        "demoModeDesc": "Thử mà không cần tạo tài khoản"
+    },
+    "DocumentCreation": {
+        "title": "Tạo Tài Liệu Mới",
+        "subtitle": "Chọn cách bạn muốn bắt đầu",
+        "blankDoc": "Tài liệu Trống",
+        "blankDesc": "Bắt đầu từ đầu",
+        "aiDoc": "Tạo bởi AI",
+        "aiDesc": "Để AI giúp bạn viết",
+        "importDoc": "Nhập Tài liệu",
+        "importDesc": "Tải lên DOCX, PDF, v.v.",
+        "docTitle": "Tiêu đề Tài liệu",
+        "docTitlePlaceholder": "ví dụ: Đề xuất Dự án",
+        "create": "Tạo Tài liệu",
+        "creating": "Đang tạo..."
+    },
+    "Editor": {
+        "newDocument": "Tài liệu Mới",
+        "untitled": "Chưa có tiêu đề",
+        "saving": "Đang lưu...",
+        "saved": "Đã lưu",
+        "share": "Chia sẻ",
+        "preview": "Xem trước",
+        "aiMedia": "Phương tiện AI",
+        "export": "Xuất"
+    },
+    "Sidebar": {
+        "pages": "Trang"
+    },
+    "StatusBar": {
+        "totalWords": "Tổng số từ:",
+        "currentPage": "Trang hiện tại:",
+        "page": "Trang",
+        "of": "của",
+        "zoom": "Thu phóng",
+        "reset": "Đặt lại"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "Chọn Ngôn ngữ"
+    },
+    "ImmersiveReader": {
+        "title": "Trình đọc Immersive",
+        "backToEditor": "Quay lại Trình soạn thảo",
+        "tabs": {
+            "textPrefs": "Tùy chọn văn bản",
+            "grammarOpts": "Tùy chọn ngữ pháp",
+            "readingPrefs": "Tùy chọn đọc"
+        },
+        "themes": {
+            "light": "Sáng",
+            "dark": "Tối",
+            "sepia": "Sepia",
+            "highContrast": "Tương phản cao"
+        },
+        "textSize": "Kích thước văn bản",
+        "font": "Phông chữ",
+        "theme": "Chủ đề",
+        "syllables": "Âm tiết",
+        "syllablesDesc": "Hiển thị ngắt âm tiết",
+        "partsOfSpeech": "Từ loại",
+        "partsOfSpeechDesc": "Làm nổi bật danh từ, động từ, v.v.",
+        "lineFocus": "Tiêu điểm dòng",
+        "focus": {
+            "none": "Không",
+            "oneLine": "1 Dòng",
+            "threeLines": "3 Dòng",
+            "fiveLines": "5 Dòng"
+        },
+        "selectVoice": "Chọn giọng nói",
+        "loadingVoices": "Đang tải giọng nói...",
+        "magicBackground": "Nền ma thuật",
+        "generating": "Đang tạo...",
+        "translateTo": "Dịch sang...",
+        "translate": "Dịch",
+        "translating": "Đang dịch...",
+        "showingOriginal": "Hiển thị bản gốc",
+        "speed": "Tốc độ"
+    }
+}

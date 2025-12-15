@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "جار التحميل...",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "create": "إنشاء",
+        "search": "بحث",
+        "settings": "الإعدادات",
+        "language": "اللغة",
+        "translate": "ترجمة",
+        "readAloud": "قراءة بصوت عالٍ",
+        "copy": "نسخ",
+        "copied": "تم النسخ",
+        "error": "خطأ",
+        "success": "تم بنجاح",
+        "refresh": "تحديث",
+        "signOut": "تسجيل الخروج",
+        "myDocuments": "مستنداتي",
+        "searchResults": "نتائج البحث",
+        "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا المستند؟",
+        "deleteSuccess": "تم حذف المستند",
+        "deleteError": "فشل في حذف المستند",
+        "loadError": "فشل في تحميل المستندات",
+        "noDocuments": "لا توجد مستندات بعد",
+        "noDocumentsFound": "لم يتم العثور على مستندات",
+        "startPrompt": "أنشئ مستندك الأول للبدء",
+        "searchPrompt": "جرب مصطلح بحث آخر"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "بحث عن المستندات...",
+        "heroTitle": "ماذا ستبتكر اليوم؟",
+        "heroSubtitle": "جرب الجيل القادم من تحرير المستندات. جميل وسريع وخالي من التشتت.",
+        "createNew": "إنشاء مستند جديد"
+    },
+    "Auth": {
+        "welcomeBack": "مرحبًا بعودتك",
+        "createAccount": "إنشاء حساب",
+        "enterDetails": "أدخل تفاصيلك للبدء",
+        "fullName": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "signIn": "تسجيل الدخول",
+        "signUp": "الاشتراك",
+        "orContinueWith": "أو الاستمرار مع",
+        "dontHaveAccount": "ليس لديك حساب؟",
+        "alreadyHaveAccount": "لديك حساب بالفعل؟",
+        "demoMode": "الوضع التجريبي",
+        "demoModeDesc": "جرب بدون إنشاء حساب"
+    },
+    "DocumentCreation": {
+        "title": "إنشاء مستند جديد",
+        "subtitle": "اختر كيف تريد البدء",
+        "blankDoc": "مستند فارغ",
+        "blankDesc": "ابدأ من الصفر",
+        "aiDoc": "مولد بالذكاء الاصطناعي",
+        "aiDesc": "دع الذكاء الاصطناعي يساعدك في الكتابة",
+        "importDoc": "استيراد مستند",
+        "importDesc": "رفع DOCX, PDF, إلخ",
+        "docTitle": "عنوان المستند",
+        "docTitlePlaceholder": "مثال: عرض المشروع",
+        "create": "إنشاء المستند",
+        "creating": "جار الإنشاء..."
+    },
+    "Editor": {
+        "newDocument": "مستند جديد",
+        "untitled": "بدون عنوان",
+        "saving": "جار الحفظ...",
+        "saved": "تم الحفظ",
+        "share": "مشاركة",
+        "preview": "معاينة",
+        "aiMedia": "وسائط الذكاء الاصطناعي",
+        "export": "تصدير"
+    },
+    "Sidebar": {
+        "pages": "صفحات"
+    },
+    "StatusBar": {
+        "totalWords": "إجمالي الكلمات:",
+        "currentPage": "الصفحة الحالية:",
+        "page": "صفحة",
+        "of": "من",
+        "zoom": "تكبير/تصغير",
+        "reset": "إعادة تعيين"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "اختر اللغة"
+    },
+    "ImmersiveReader": {
+        "title": "القارئ الشامل",
+        "backToEditor": "العودة للمحرر",
+        "tabs": {
+            "textPrefs": "تفضيلات النص",
+            "grammarOpts": "خيارات النحو",
+            "readingPrefs": "تفضيلات القراءة"
+        },
+        "themes": {
+            "light": "فاتح",
+            "dark": "داكن",
+            "sepia": "بني داكن",
+            "highContrast": "تباين عالي"
+        },
+        "textSize": "حجم النص",
+        "font": "الخط",
+        "theme": "النسق",
+        "syllables": "مقاطع لفظية",
+        "syllablesDesc": "إظهار فواصل المقاطع",
+        "partsOfSpeech": "أقسام الكلام",
+        "partsOfSpeechDesc": "تمييز الأسماء والأفعال وغيرها",
+        "lineFocus": "التركيز على السطر",
+        "focus": {
+            "none": "بلا",
+            "oneLine": "سطر واحد",
+            "threeLines": "3 أسطر",
+            "fiveLines": "5 أسطر"
+        },
+        "selectVoice": "اختر صوتاً",
+        "loadingVoices": "تحميل الأصوات...",
+        "magicBackground": "خلفية سحرية",
+        "generating": "جار الإنشاء...",
+        "translateTo": "ترجم إلى...",
+        "translate": "ترجم",
+        "translating": "جار الترجمة...",
+        "showingOriginal": "عرض النص الأصلي",
+        "speed": "السرعة"
+    }
+}

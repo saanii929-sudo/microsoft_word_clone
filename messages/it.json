@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "Caricamento in corso...",
+        "save": "Salva",
+        "cancel": "Annulla",
+        "delete": "Elimina",
+        "edit": "Modifica",
+        "create": "Crea",
+        "search": "Cerca",
+        "settings": "Impostazioni",
+        "language": "Lingua",
+        "translate": "Traduci",
+        "readAloud": "Leggi ad alta voce",
+        "copy": "Copia",
+        "copied": "Copiato",
+        "error": "Errore",
+        "success": "Successo",
+        "refresh": "Aggiorna",
+        "signOut": "Disconnetti",
+        "myDocuments": "I miei documenti",
+        "searchResults": "Risultati ricerca",
+        "deleteConfirm": "Sei sicuro di voler eliminare questo documento?",
+        "deleteSuccess": "Documento eliminato",
+        "deleteError": "Errore durante l'eliminazione del documento",
+        "loadError": "Errore durante il caricamento dei documenti",
+        "noDocuments": "Nessun documento ancora",
+        "noDocumentsFound": "Nessun documento trovato",
+        "startPrompt": "Crea il tuo primo documento per iniziare",
+        "searchPrompt": "Prova con un altro termine di ricerca"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "Cerca documenti...",
+        "heroTitle": "Cosa creerai oggi?",
+        "heroSubtitle": "Sperimenta la nuova generazione di editing di documenti. Bello, veloce e senza distrazioni.",
+        "createNew": "Crea Nuovo Documento"
+    },
+    "Auth": {
+        "welcomeBack": "Bentornato",
+        "createAccount": "Crea un account",
+        "enterDetails": "Inserisci i tuoi dati per iniziare",
+        "fullName": "Nome Completo",
+        "email": "Email",
+        "password": "Password",
+        "signIn": "Accedi",
+        "signUp": "Iscriviti",
+        "orContinueWith": "O continua con",
+        "dontHaveAccount": "Non hai un account?",
+        "alreadyHaveAccount": "Hai già un account?",
+        "demoMode": "Modalità Demo",
+        "demoModeDesc": "Prova senza creare un account"
+    },
+    "DocumentCreation": {
+        "title": "Crea Nuovo Documento",
+        "subtitle": "Scegli come vuoi iniziare",
+        "blankDoc": "Documento Vuoto",
+        "blankDesc": "Inizia da zero",
+        "aiDoc": "Generato da IA",
+        "aiDesc": "Lascia che l'IA ti aiuti a scrivere",
+        "importDoc": "Importa Documento",
+        "importDesc": "Carica DOCX, PDF, ecc.",
+        "docTitle": "Titolo del Documento",
+        "docTitlePlaceholder": "es. Proposta di Progetto",
+        "create": "Crea Documento",
+        "creating": "Creazione in corso..."
+    },
+    "Editor": {
+        "newDocument": "Nuovo Documento",
+        "untitled": "Senza titolo",
+        "saving": "Salvataggio...",
+        "saved": "Salvato",
+        "share": "Condividi",
+        "preview": "Anteprima",
+        "aiMedia": "Media IA",
+        "export": "Esporta"
+    },
+    "Sidebar": {
+        "pages": "Pagine"
+    },
+    "StatusBar": {
+        "totalWords": "Parole Totali:",
+        "currentPage": "Pagina Corrente:",
+        "page": "Pagina",
+        "of": "di",
+        "zoom": "Zoom",
+        "reset": "Ripristina"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "Seleziona Lingua"
+    },
+    "ImmersiveReader": {
+        "title": "Lettore Immersivo",
+        "backToEditor": "Torna all'Editor",
+        "tabs": {
+            "textPrefs": "Pref. Testo",
+            "grammarOpts": "Opzioni Grammatica",
+            "readingPrefs": "Pref. Lettura"
+        },
+        "themes": {
+            "light": "Chiaro",
+            "dark": "Scuro",
+            "sepia": "Seppia",
+            "highContrast": "Alto Contrasto"
+        },
+        "textSize": "Dimensione Testo",
+        "font": "Carattere",
+        "theme": "Tema",
+        "syllables": "Sillabe",
+        "syllablesDesc": "Mostra sillabazione",
+        "partsOfSpeech": "Parti del Discorso",
+        "partsOfSpeechDesc": "Evidenzia nomi, verbi, ecc.",
+        "lineFocus": "Focus Riga",
+        "focus": {
+            "none": "Nessuno",
+            "oneLine": "1 Riga",
+            "threeLines": "3 Righe",
+            "fiveLines": "5 Righe"
+        },
+        "selectVoice": "Seleziona Voce",
+        "loadingVoices": "Caricamento voci...",
+        "magicBackground": "Sfondo Magico",
+        "generating": "Generazione...",
+        "translateTo": "Traduci in...",
+        "translate": "Traduci",
+        "translating": "Traduzione...",
+        "showingOriginal": "Mostra originale",
+        "speed": "Velocità"
+    }
+}

@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "Загрузка...",
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "delete": "Удалить",
+        "edit": "Редактировать",
+        "create": "Создать",
+        "search": "Поиск",
+        "settings": "Настройки",
+        "language": "Язык",
+        "translate": "Перевести",
+        "readAloud": "Читать вслух",
+        "copy": "Копировать",
+        "copied": "Скопировано",
+        "error": "Ошибка",
+        "success": "Успех",
+        "refresh": "Обновить",
+        "signOut": "Выйти",
+        "myDocuments": "Мои документы",
+        "searchResults": "Результаты поиска",
+        "deleteConfirm": "Вы уверены, что хотите удалить этот документ?",
+        "deleteSuccess": "Документ удален",
+        "deleteError": "Ошибка при удалении документа",
+        "loadError": "Ошибка при загрузке документов",
+        "noDocuments": "Пока нет документов",
+        "noDocumentsFound": "Документы не найдены",
+        "startPrompt": "Создайте свой первый документ, чтобы начать",
+        "searchPrompt": "Попробуйте другой поисковый запрос"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "Поиск документов...",
+        "heroTitle": "Что вы создадите сегодня?",
+        "heroSubtitle": "Испытайте следующее поколение редактирования документов. Красиво, быстро и без отвлекающих факторов.",
+        "createNew": "Создать новый документ"
+    },
+    "Auth": {
+        "welcomeBack": "С возвращением",
+        "createAccount": "Создать аккаунт",
+        "enterDetails": "Введите свои данные, чтобы начать",
+        "fullName": "Полное имя",
+        "email": "Электронная почта",
+        "password": "Пароль",
+        "signIn": "Войти",
+        "signUp": "Зарегистрироваться",
+        "orContinueWith": "Или продолжить с",
+        "dontHaveAccount": "Нет аккаунта?",
+        "alreadyHaveAccount": "Уже есть аккаунт?",
+        "demoMode": "Демо-режим",
+        "demoModeDesc": "Попробовать без создания аккаунта"
+    },
+    "DocumentCreation": {
+        "title": "Создать новый документ",
+        "subtitle": "Выберите, как вы хотите начать",
+        "blankDoc": "Пустой документ",
+        "blankDesc": "Начать с чистого листа",
+        "aiDoc": "Создано ИИ",
+        "aiDesc": "Пусть ИИ поможет вам писать",
+        "importDoc": "Импортировать документ",
+        "importDesc": "Загрузить DOCX, PDF и т.д.",
+        "docTitle": "Название документа",
+        "docTitlePlaceholder": "например, Предложение проекта",
+        "create": "Создать документ",
+        "creating": "Создание..."
+    },
+    "Editor": {
+        "newDocument": "Новый документ",
+        "untitled": "Без названия",
+        "saving": "Сохранение...",
+        "saved": "Сохранено",
+        "share": "Поделиться",
+        "preview": "Предпросмотр",
+        "aiMedia": "ИИ Медиа",
+        "export": "Экспорт"
+    },
+    "Sidebar": {
+        "pages": "Страницы"
+    },
+    "StatusBar": {
+        "totalWords": "Всего слов:",
+        "currentPage": "Текущая страница:",
+        "page": "Страница",
+        "of": "из",
+        "zoom": "Масштаб",
+        "reset": "Сброс"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "Выберите язык"
+    },
+    "ImmersiveReader": {
+        "title": "Иммерсивное чтение",
+        "backToEditor": "Назад в редактор",
+        "tabs": {
+            "textPrefs": "Текст",
+            "grammarOpts": "Грамматика",
+            "readingPrefs": "Чтение"
+        },
+        "themes": {
+            "light": "Светлая",
+            "dark": "Темная",
+            "sepia": "Сепия",
+            "highContrast": "Контрастная"
+        },
+        "textSize": "Размер текста",
+        "font": "Шрифт",
+        "theme": "Тема",
+        "syllables": "Слоги",
+        "syllablesDesc": "Показать разбиение на слоги",
+        "partsOfSpeech": "Части речи",
+        "partsOfSpeechDesc": "Выделить существительные, глаголы и т.д.",
+        "lineFocus": "Фокус строки",
+        "focus": {
+            "none": "Нет",
+            "oneLine": "1 строка",
+            "threeLines": "3 строки",
+            "fiveLines": "5 строк"
+        },
+        "selectVoice": "Выбрать голос",
+        "loadingVoices": "Загрузка голосов...",
+        "magicBackground": "Магический фон",
+        "generating": "Генерация...",
+        "translateTo": "Перевести на...",
+        "translate": "Перевести",
+        "translating": "Перевод...",
+        "showingOriginal": "Показать оригинал",
+        "speed": "Скорость"
+    }
+}

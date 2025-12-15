@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "Laden...",
+        "save": "Opslaan",
+        "cancel": "Annuleren",
+        "delete": "Verwijderen",
+        "edit": "Bewerken",
+        "create": "Maken",
+        "search": "Zoeken",
+        "settings": "Instellingen",
+        "language": "Taal",
+        "translate": "Vertalen",
+        "readAloud": "Voorlezen",
+        "copy": "Kopiëren",
+        "copied": "Gekopieerd",
+        "error": "Fout",
+        "success": "Succes",
+        "refresh": "Vernieuwen",
+        "signOut": "Afmelden",
+        "myDocuments": "Mijn Documenten",
+        "searchResults": "Zoekresultaten",
+        "deleteConfirm": "Weet je zeker dat je dit document wilt verwijderen?",
+        "deleteSuccess": "Document verwijderd",
+        "deleteError": "Fout bij verwijderen document",
+        "loadError": "Fout bij laden documenten",
+        "noDocuments": "Nog geen documenten",
+        "noDocumentsFound": "Geen documenten gevonden",
+        "startPrompt": "Maak je eerste document om te beginnen",
+        "searchPrompt": "Probeer een andere zoekterm"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "Documenten zoeken...",
+        "heroTitle": "Wat ga je vandaag maken?",
+        "heroSubtitle": "Ervaar de volgende generatie documentbewerking. Mooi, snel en zonder afleiding.",
+        "createNew": "Nieuw Document Maken"
+    },
+    "Auth": {
+        "welcomeBack": "Welkom terug",
+        "createAccount": "Account aanmaken",
+        "enterDetails": "Voer je gegevens in om te beginnen",
+        "fullName": "Volledige Naam",
+        "email": "E-mail",
+        "password": "Wachtwoord",
+        "signIn": "Inloggen",
+        "signUp": "Aanmelden",
+        "orContinueWith": "Of ga verder met",
+        "dontHaveAccount": "Heb je geen account?",
+        "alreadyHaveAccount": "Heb je al een account?",
+        "demoMode": "Demo Modus",
+        "demoModeDesc": "Probeer zonder een account aan te maken"
+    },
+    "DocumentCreation": {
+        "title": "Nieuw Document Maken",
+        "subtitle": "Kies hoe je wilt beginnen",
+        "blankDoc": "Leeg Document",
+        "blankDesc": "Begin met een schone lei",
+        "aiDoc": "AI Gegenereerd",
+        "aiDesc": "Laat AI je helpen schrijven",
+        "importDoc": "Document Importeren",
+        "importDesc": "Upload DOCX, PDF, enz.",
+        "docTitle": "Documenttitel",
+        "docTitlePlaceholder": "bijv. Projectvoorstel",
+        "create": "Document Maken",
+        "creating": "Maken..."
+    },
+    "Editor": {
+        "newDocument": "Nieuw Document",
+        "untitled": "Naamloos",
+        "saving": "Opslaan...",
+        "saved": "Opgeslagen",
+        "share": "Delen",
+        "preview": "Voorbeeld",
+        "aiMedia": "AI Media",
+        "export": "Exporteren"
+    },
+    "Sidebar": {
+        "pages": "Pagina's"
+    },
+    "StatusBar": {
+        "totalWords": "Totaal aantal woorden:",
+        "currentPage": "Huidige Pagina:",
+        "page": "Pagina",
+        "of": "van",
+        "zoom": "Zoom",
+        "reset": "Resetten"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "Selecteer Taal"
+    },
+    "ImmersiveReader": {
+        "title": "Immersieve Lezer",
+        "backToEditor": "Terug naar Editor",
+        "tabs": {
+            "textPrefs": "Tekst Voorkeuren",
+            "grammarOpts": "Grammatica Opties",
+            "readingPrefs": "Leesvoorkeuren"
+        },
+        "themes": {
+            "light": "Licht",
+            "dark": "Donker",
+            "sepia": "Sepia",
+            "highContrast": "Hoog Contrast"
+        },
+        "textSize": "Tekstgrootte",
+        "font": "Lettertype",
+        "theme": "Thema",
+        "syllables": "Lettergrepen",
+        "syllablesDesc": "Toon lettergreeponderbrekingen",
+        "partsOfSpeech": "Woordsoorten",
+        "partsOfSpeechDesc": "Markeer zelfstandige naamwoorden, werkwoorden, enz.",
+        "lineFocus": "Regelfocus",
+        "focus": {
+            "none": "Geen",
+            "oneLine": "1 Regel",
+            "threeLines": "3 Regels",
+            "fiveLines": "5 Regels"
+        },
+        "selectVoice": "Selecteer Stem",
+        "loadingVoices": "Stemmen laden...",
+        "magicBackground": "Magische Achtergrond",
+        "generating": "Genereren...",
+        "translateTo": "Vertalen naar...",
+        "translate": "Vertalen",
+        "translating": "Vertalen...",
+        "showingOriginal": "Origineel tonen",
+        "speed": "Snelheid"
+    }
+}

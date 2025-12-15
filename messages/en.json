@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "search": "Search",
+        "settings": "Settings",
+        "language": "Language",
+        "translate": "Translate",
+        "readAloud": "Read Aloud",
+        "copy": "Copy",
+        "copied": "Copied",
+        "error": "Error",
+        "success": "Success",
+        "refresh": "Refresh",
+        "signOut": "Sign Out",
+        "myDocuments": "My Documents",
+        "searchResults": "Search Results",
+        "deleteConfirm": "Are you sure you want to delete this document?",
+        "deleteSuccess": "Document deleted",
+        "deleteError": "Error deleting document",
+        "loadError": "Error loading documents",
+        "noDocuments": "No documents yet",
+        "noDocumentsFound": "No documents found",
+        "startPrompt": "Create your first document to start",
+        "searchPrompt": "Try a different search term"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "Search documents...",
+        "heroTitle": "What will you create today?",
+        "heroSubtitle": "Experience the next generation of document editing. Beautiful, fast, and distraction-free.",
+        "createNew": "Create New Document"
+    },
+    "Auth": {
+        "welcomeBack": "Welcome back",
+        "createAccount": "Create an account",
+        "enterDetails": "Enter your details to get started",
+        "fullName": "Full Name",
+        "email": "Email",
+        "password": "Password",
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "orContinueWith": "Or continue with",
+        "dontHaveAccount": "Don't have an account?",
+        "alreadyHaveAccount": "Already have an account?",
+        "demoMode": "Demo Mode",
+        "demoModeDesc": "Try without creating an account"
+    },
+    "DocumentCreation": {
+        "title": "Create New Document",
+        "subtitle": "Choose how you want to start",
+        "blankDoc": "Blank Document",
+        "blankDesc": "Start from a clean slate",
+        "aiDoc": "AI Generated",
+        "aiDesc": "Let AI help you write",
+        "importDoc": "Import Document",
+        "importDesc": "Upload DOCX, PDF, etc.",
+        "docTitle": "Document Title",
+        "docTitlePlaceholder": "e.g. Project Proposal",
+        "create": "Create Document",
+        "creating": "Creating..."
+    },
+    "Editor": {
+        "newDocument": "New Document",
+        "untitled": "Untitled",
+        "saving": "Saving...",
+        "saved": "Saved",
+        "share": "Share",
+        "preview": "Preview",
+        "aiMedia": "AI Media",
+        "export": "Export"
+    },
+    "Sidebar": {
+        "pages": "Pages"
+    },
+    "StatusBar": {
+        "totalWords": "Total Words:",
+        "currentPage": "Current Page:",
+        "page": "Page",
+        "of": "of",
+        "zoom": "Zoom",
+        "reset": "Reset"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "Select Language"
+    },
+    "ImmersiveReader": {
+        "title": "Immersive Reader",
+        "backToEditor": "Back to Editor",
+        "tabs": {
+            "textPrefs": "Text Prefs",
+            "grammarOpts": "Grammar Opts",
+            "readingPrefs": "Reading Prefs"
+        },
+        "themes": {
+            "light": "Light",
+            "dark": "Dark",
+            "sepia": "Sepia",
+            "highContrast": "High Contrast"
+        },
+        "textSize": "Text Size",
+        "font": "Font",
+        "theme": "Theme",
+        "syllables": "Syllables",
+        "syllablesDesc": "Show syllable breaks",
+        "partsOfSpeech": "Parts of Speech",
+        "partsOfSpeechDesc": "Highlight nouns, verbs, etc.",
+        "lineFocus": "Line Focus",
+        "focus": {
+            "none": "None",
+            "oneLine": "1 Line",
+            "threeLines": "3 Lines",
+            "fiveLines": "5 Lines"
+        },
+        "selectVoice": "Select Voice",
+        "loadingVoices": "Loading voices...",
+        "magicBackground": "Magic Background",
+        "generating": "Generating...",
+        "translateTo": "Translate to...",
+        "translate": "Translate",
+        "translating": "Translating...",
+        "showingOriginal": "Showing original",
+        "speed": "Speed"
+    }
+}

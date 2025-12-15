@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "טוען...",
+        "save": "שמור",
+        "cancel": "ביטול",
+        "delete": "מחק",
+        "edit": "ערוך",
+        "create": "צור",
+        "search": "חיפוש",
+        "settings": "הגדרות",
+        "language": "שפה",
+        "translate": "תרגם",
+        "readAloud": "קרא בקול",
+        "copy": "העתק",
+        "copied": "הועתק",
+        "error": "שגיאה",
+        "success": "הצלחה",
+        "refresh": "רענן",
+        "signOut": "התנתק",
+        "myDocuments": "המסמכים שלי",
+        "searchResults": "תוצאות חיפוש",
+        "deleteConfirm": "האם אתה בטוח שברצונך למחוק מסמך זה?",
+        "deleteSuccess": "המסמך נמחק",
+        "deleteError": "שגיאה במחיקת המסמך",
+        "loadError": "שגיאה בטעינת מסמכים",
+        "noDocuments": "אין מסמכים עדיין",
+        "noDocumentsFound": "לא נמצאו מסמכים",
+        "startPrompt": "צור את המסמך הראשון שלך כדי להתחיל",
+        "searchPrompt": "נסה מונח חיפוש אחר"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "חפש מסמכים...",
+        "heroTitle": "מה תיצור היום?",
+        "heroSubtitle": "חווה את הדור הבא של עריכת מסמכים. יפה, מהיר וללא הסחות דעת.",
+        "createNew": "צור מסמך חדש"
+    },
+    "Auth": {
+        "welcomeBack": "ברוך שובך",
+        "createAccount": "צור חשבון",
+        "enterDetails": "הזן את הפרטים שלך כדי להתחיל",
+        "fullName": "שם מלא",
+        "email": "אימייל",
+        "password": "סיסמא",
+        "signIn": "התחבר",
+        "signUp": "הירשם",
+        "orContinueWith": "או המשך עם",
+        "dontHaveAccount": "אין לך חשבון?",
+        "alreadyHaveAccount": "יש לך כבר חשבון?",
+        "demoMode": "מצב הדגמה",
+        "demoModeDesc": "נסה ללא יצירת חשבון"
+    },
+    "DocumentCreation": {
+        "title": "צור מסמך חדש",
+        "subtitle": "בחר כיצד ברצונך להתחיל",
+        "blankDoc": "מסמך ריק",
+        "blankDesc": "התחל מדף נקי",
+        "aiDoc": "נוצר ע\"י AI",
+        "aiDesc": "תן ל-AI לעזור לך לכתוב",
+        "importDoc": "ייבא מסמך",
+        "importDesc": "העלה DOCX, PDF וכו'",
+        "docTitle": "כותרת המסמך",
+        "docTitlePlaceholder": "לדוגמה: הצעת פרויקט",
+        "create": "צור מסמך",
+        "creating": "יוצר..."
+    },
+    "Editor": {
+        "newDocument": "מסמך חדש",
+        "untitled": "ללא כותרת",
+        "saving": "שומר...",
+        "saved": "נשמר",
+        "share": "שתף",
+        "preview": "תצוגה מקדימה",
+        "aiMedia": "מדיה AI",
+        "export": "ייצוא"
+    },
+    "Sidebar": {
+        "pages": "דפים"
+    },
+    "StatusBar": {
+        "totalWords": "סה\"כ מילים:",
+        "currentPage": "עמוד נוכחי:",
+        "page": "עמוד",
+        "of": "מתוך",
+        "zoom": "זום",
+        "reset": "אפס"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "בחר שפה"
+    },
+    "ImmersiveReader": {
+        "title": "קורא מסייע",
+        "backToEditor": "חזרה לעורך",
+        "tabs": {
+            "textPrefs": "העדפות טקסט",
+            "grammarOpts": "אפשרויות דקדוק",
+            "readingPrefs": "העדפות קריאה"
+        },
+        "themes": {
+            "light": "בהיר",
+            "dark": "כהה",
+            "sepia": "ספיה",
+            "highContrast": "ניגודיות גבוהה"
+        },
+        "textSize": "גודל טקסט",
+        "font": "גופן",
+        "theme": "ערכת נושא",
+        "syllables": "הברות",
+        "syllablesDesc": "הצג מעברי הברות",
+        "partsOfSpeech": "חלקי דיבור",
+        "partsOfSpeechDesc": "הדגש שמות עצם, פעלים וכו'",
+        "lineFocus": "מיקוד שורה",
+        "focus": {
+            "none": "ללא",
+            "oneLine": "שורה אחת",
+            "threeLines": "3 שורות",
+            "fiveLines": "5 שורות"
+        },
+        "selectVoice": "בחר קול",
+        "loadingVoices": "טוען קולות...",
+        "magicBackground": "רקע קסום",
+        "generating": "יוצר...",
+        "translateTo": "תרגם ל...",
+        "translate": "תרגם",
+        "translating": "מתרגם...",
+        "showingOriginal": "מציג מקור",
+        "speed": "מהירות"
+    }
+}

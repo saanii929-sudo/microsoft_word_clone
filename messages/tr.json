@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "Yükleniyor...",
+        "save": "Kaydet",
+        "cancel": "İptal",
+        "delete": "Sil",
+        "edit": "Düzenle",
+        "create": "Oluştur",
+        "search": "Ara",
+        "settings": "Ayarlar",
+        "language": "Dil",
+        "translate": "Çevir",
+        "readAloud": "Sesli Oku",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "error": "Hata",
+        "success": "Başarılı",
+        "refresh": "Yenile",
+        "signOut": "Çıkış Yap",
+        "myDocuments": "Belgelerim",
+        "searchResults": "Arama Sonuçları",
+        "deleteConfirm": "Bu belgeyi silmek istediğinizden emin misiniz?",
+        "deleteSuccess": "Belge silindi",
+        "deleteError": "Belge silinirken hata",
+        "loadError": "Belgeler yüklenirken hata",
+        "noDocuments": "Henüz belge yok",
+        "noDocumentsFound": "Belge bulunamadı",
+        "startPrompt": "Başlamak için ilk belgenizi oluşturun",
+        "searchPrompt": "Farklı bir arama terimi deneyin"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "Belge ara...",
+        "heroTitle": "Bugün ne yaratacaksınız?",
+        "heroSubtitle": "Yeni nesil belge düzenlemeyi deneyimleyin. Güzel, hızlı ve dikkat dağıtıcı değil.",
+        "createNew": "Yeni Belge Oluştur"
+    },
+    "Auth": {
+        "welcomeBack": "Tekrar hoş geldiniz",
+        "createAccount": "Hesap oluştur",
+        "enterDetails": "Başlamak için bilgilerinizi girin",
+        "fullName": "Tam İsim",
+        "email": "E-posta",
+        "password": "Şifre",
+        "signIn": "Giriş Yap",
+        "signUp": "Kaydol",
+        "orContinueWith": "Veya şununla devam et",
+        "dontHaveAccount": "Hesabınız yok mu?",
+        "alreadyHaveAccount": "Zaten hesabınız var mı?",
+        "demoMode": "Demo Modu",
+        "demoModeDesc": "Hesap oluşturmadan deneyin"
+    },
+    "DocumentCreation": {
+        "title": "Yeni Belge Oluştur",
+        "subtitle": "Nasıl başlamak istediğinizi seçin",
+        "blankDoc": "Boş Belge",
+        "blankDesc": "Temiz bir sayfa ile başlayın",
+        "aiDoc": "Yapay Zeka Oluşturuldu",
+        "aiDesc": "Yapay Zeka'nın yazmanıza yardım etmesine izin verin",
+        "importDoc": "Belge İçe Aktar",
+        "importDesc": "DOCX, PDF vb. yükle",
+        "docTitle": "Belge Başlığı",
+        "docTitlePlaceholder": "örn. Proje Teklifi",
+        "create": "Belge Oluştur",
+        "creating": "Oluşturuluyor..."
+    },
+    "Editor": {
+        "newDocument": "Yeni Belge",
+        "untitled": "Başlıksız",
+        "saving": "Kaydediliyor...",
+        "saved": "Kaydedildi",
+        "share": "Paylaş",
+        "preview": "Önizleme",
+        "aiMedia": "Yapay Zeka Medya",
+        "export": "Dışa Aktar"
+    },
+    "Sidebar": {
+        "pages": "Sayfalar"
+    },
+    "StatusBar": {
+        "totalWords": "Toplam Kelime:",
+        "currentPage": "Geçerli Sayfa:",
+        "page": "Sayfa",
+        "of": "/",
+        "zoom": "Yakınlaştır",
+        "reset": "Sıfırla"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "Dil Seç"
+    },
+    "ImmersiveReader": {
+        "title": "Sürükleyici Okuyucu",
+        "backToEditor": "Düzenleyiciye Dön",
+        "tabs": {
+            "textPrefs": "Metin Tercihleri",
+            "grammarOpts": "Dilbilgisi Seçenekleri",
+            "readingPrefs": "Okuma Tercihleri"
+        },
+        "themes": {
+            "light": "Açık",
+            "dark": "Koyu",
+            "sepia": "Sepya",
+            "highContrast": "Yüksek Kontrast"
+        },
+        "textSize": "Metin Boyutu",
+        "font": "Yazı Tipi",
+        "theme": "Tema",
+        "syllables": "Heceler",
+        "syllablesDesc": "Hece kesmelerini göster",
+        "partsOfSpeech": "Sözcük Türleri",
+        "partsOfSpeechDesc": "İsimleri, fiilleri vb. vurgula",
+        "lineFocus": "Satır Odağı",
+        "focus": {
+            "none": "Yok",
+            "oneLine": "1 Satır",
+            "threeLines": "3 Satır",
+            "fiveLines": "5 Satır"
+        },
+        "selectVoice": "Ses Seç",
+        "loadingVoices": "Sesler yükleniyor...",
+        "magicBackground": "Sihirli Arka Plan",
+        "generating": "Oluşturuluyor...",
+        "translateTo": "Şuraya çevir...",
+        "translate": "Çevir",
+        "translating": "Çevriliyor...",
+        "showingOriginal": "Orijinal gösteriliyor",
+        "speed": "Hız"
+    }
+}

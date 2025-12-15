@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "লোড হচ্ছে...",
+        "save": "সংরক্ষণ করুন",
+        "cancel": "বাতিল",
+        "delete": "মুছুন",
+        "edit": "সম্পাদনা",
+        "create": "তৈরি করুন",
+        "search": "অনুসন্ধান",
+        "settings": "সেটিংস",
+        "language": "ভাষা",
+        "translate": "অনুবাদ",
+        "readAloud": "জোরে পড়ুন",
+        "copy": "কপি",
+        "copied": "কপি হয়েছে",
+        "error": "ত্রুটি",
+        "success": "সফল",
+        "refresh": "রিফ্রেশ",
+        "signOut": "সাইন আউট",
+        "myDocuments": "আমার নথিপত্র",
+        "searchResults": "অনুসন্ধানের ফলাফল",
+        "deleteConfirm": "আপনি কি নিশ্চিত যে আপনি এই নথিটি মুছতে চান?",
+        "deleteSuccess": "নথি মুছে ফেলা হয়েছে",
+        "deleteError": "নথি মুছতে ব্যর্থ হয়েছে",
+        "loadError": "নথি লোড করতে ব্যর্থ হয়েছে",
+        "noDocuments": "এখনও কোন নথি নেই",
+        "noDocumentsFound": "কোন নথি পাওয়া যায়নি",
+        "startPrompt": "শুরু করতে আপনার প্রথম নথি তৈরি করুন",
+        "searchPrompt": "অন্য একটি অনুসন্ধান শব্দ চেষ্টা করুন"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "নথি অনুসন্ধান করুন...",
+        "heroTitle": "আজ আপনি কি তৈরি করবেন?",
+        "heroSubtitle": "পরবর্তী প্রজন্মের নথি সম্পাদনার অভিজ্ঞতা নিন। সুন্দর, দ্রুত এবং বিভ্রান্তিমুক্ত।",
+        "createNew": "নতুন নথি তৈরি করুন"
+    },
+    "Auth": {
+        "welcomeBack": "স্বাগতম",
+        "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+        "enterDetails": "শুরু করতে আপনার বিবরণ লিখুন",
+        "fullName": "পূর্ণ নাম",
+        "email": "ইমেল",
+        "password": "পাসওয়ার্ড",
+        "signIn": "সাইন ইন",
+        "signUp": "সাইন আপ",
+        "orContinueWith": "অথবা সাথে চালিয়ে যান",
+        "dontHaveAccount": "কোন অ্যাকাউন্ট নেই?",
+        "alreadyHaveAccount": "ইতিমধ্যে একটি অ্যাকাউন্ট আছে?",
+        "demoMode": "ডেমো মোড",
+        "demoModeDesc": "অ্যাকাউন্ট তৈরি না করে চেষ্টা করুন"
+    },
+    "DocumentCreation": {
+        "title": "নতুন নথি তৈরি করুন",
+        "subtitle": "আপনি কীভাবে শুরু করতে চান তা চয়ন করুন",
+        "blankDoc": "খালি নথি",
+        "blankDesc": "শুরু থেকে শুরু করুন",
+        "aiDoc": "এআই জেনারেটেড",
+        "aiDesc": "এআই আপনাকে লিখতে সাহায্য করুক",
+        "importDoc": "নথি আমদানি করুন",
+        "importDesc": "DOCX, PDF ইত্যাদি আপলোড করুন",
+        "docTitle": "নথির শিরোনাম",
+        "docTitlePlaceholder": "যেমন, প্রজেক্ট প্রস্তাবনা",
+        "create": "নথি তৈরি করুন",
+        "creating": "তৈরি হচ্ছে..."
+    },
+    "Editor": {
+        "newDocument": "নতুন নথি",
+        "untitled": "শিরোনামহীন",
+        "saving": "সংরক্ষণ করা হচ্ছে...",
+        "saved": "সংরক্ষিত",
+        "share": "শেয়ার",
+        "preview": "প্রাকদর্শনে",
+        "aiMedia": "এআই মিডিয়া",
+        "export": "রপ্তানি"
+    },
+    "Sidebar": {
+        "pages": "পৃষ্ঠা"
+    },
+    "StatusBar": {
+        "totalWords": "মোট শব্দ:",
+        "currentPage": "বর্তমান পৃষ্ঠা:",
+        "page": "পৃষ্ঠা",
+        "of": "এর",
+        "zoom": "জুম",
+        "reset": "রিসেট"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "ভাষা নির্বাচন করুন"
+    },
+    "ImmersiveReader": {
+        "title": "নিমগ্ন পাঠক",
+        "backToEditor": "সম্পাদকে ফিরে যান",
+        "tabs": {
+            "textPrefs": "পাঠ্য পছন্দ",
+            "grammarOpts": "ব্যাকরণ বিকল্প",
+            "readingPrefs": "পড়ার পছন্দ"
+        },
+        "themes": {
+            "light": "হালকা",
+            "dark": "অন্ধকার",
+            "sepia": "সেপিয়া",
+            "highContrast": "উচ্চ বৈসাদৃশ্য"
+        },
+        "textSize": "পাঠ্য আকার",
+        "font": "ফন্ট",
+        "theme": "থিম",
+        "syllables": "অক্ষর",
+        "syllablesDesc": "অক্ষর বিরতি দেখান",
+        "partsOfSpeech": "বক্তৃতার অংশ",
+        "partsOfSpeechDesc": "বিশেষ্য, ক্রিয়া, ইত্যাদি হাইলাইট করুন",
+        "lineFocus": "লাইন ফোকাস",
+        "focus": {
+            "none": "কিছুই না",
+            "oneLine": "১ লাইন",
+            "threeLines": "৩ লাইন",
+            "fiveLines": "৫ লাইন"
+        },
+        "selectVoice": "ভয়েস নির্বাচন করুন",
+        "loadingVoices": "ভয়েস লোড হচ্ছে...",
+        "magicBackground": "জাদু পটভূমি",
+        "generating": "তৈরি হচ্ছে...",
+        "translateTo": "অনুবাদ করুন...",
+        "translate": "অনুবাদ",
+        "translating": "অনুবাদ হচ্ছে...",
+        "showingOriginal": "আসল দেখাচ্ছে",
+        "speed": "গতি"
+    }
+}

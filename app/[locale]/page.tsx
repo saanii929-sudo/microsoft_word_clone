@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/navigation'; // Use localized router
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Plus, Clock, FileText, Search, MoreHorizontal, LogOut, User, Loader2 } from 'lucide-react';
@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useTranslations } from 'next-intl';
 
 interface Document {
   id: string;
@@ -36,6 +38,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const t = useTranslations('Common');
+  const tHome = useTranslations('Home');
+  const tEditor = useTranslations('Editor');
+
   // Redirect to auth if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
@@ -55,7 +61,7 @@ export default function Home() {
 
     try {
       setLoading(true);
-      
+
       // Fetch documents where user is owner
       const { data: ownedDocs, error: ownedError } = await supabase
         .from('documents')
@@ -108,7 +114,7 @@ export default function Home() {
                 .select('full_name, email')
                 .eq('id', doc.owner_id)
                 .single();
-              
+
               if (!profileError) {
                 profile = profileData;
               }
@@ -137,7 +143,7 @@ export default function Home() {
               .select('full_name, email')
               .eq('id', doc.owner_id)
               .single();
-            
+
             if (!profileError) {
               profile = profileData;
             }
@@ -154,17 +160,17 @@ export default function Home() {
       }
 
       // Sort by updated_at
-      allDocs.sort((a, b) => 
+      allDocs.sort((a, b) =>
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
       );
 
       setDocuments(allDocs);
     } catch (error: any) {
       console.error('Error loading documents:', error);
-      
+
       // Extract meaningful error message
-      let errorMessage = 'Failed to load documents';
-      
+      let errorMessage = t('loadError');
+
       if (error?.message) {
         errorMessage = error.message;
       } else if (error?.error_description) {
@@ -186,7 +192,7 @@ export default function Home() {
           errorMessage = `Database error (${error.code}): ${error.message || 'Unknown error'}`;
         }
       }
-      
+
       // Only show error toast if it's a real error (not just "no documents")
       if (error?.code !== 'PGRST116') {
         toast.error(errorMessage);
@@ -198,8 +204,8 @@ export default function Home() {
 
   const handleDeleteDocument = async (docId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (!confirm('Are you sure you want to delete this document?')) return;
+
+    if (!confirm(t('deleteConfirm'))) return;
 
     try {
       const { error } = await supabase
@@ -210,11 +216,11 @@ export default function Home() {
 
       if (error) throw error;
 
-      toast.success('Document deleted');
+      toast.success(t('deleteSuccess'));
       loadDocuments();
     } catch (error: any) {
       console.error('Error deleting document:', error);
-      toast.error('Failed to delete document');
+      toast.error(t('deleteError'));
     }
   };
 
@@ -255,15 +261,16 @@ export default function Home() {
               <FileText className="text-white w-6 h-6" />
             </div>
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              Word Studio
+              {tHome('headerTitle')}
             </h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search documents..."
+                placeholder={tHome('searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 w-64 rounded-full bg-white/50 backdrop-blur border border-white/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm"
@@ -278,7 +285,7 @@ export default function Home() {
             <button
               onClick={handleSignOut}
               className="w-10 h-10 rounded-full bg-white/50 backdrop-blur border border-white/60 flex items-center justify-center hover:bg-white/80 transition shadow-sm"
-              title="Sign out"
+              title={t('signOut')}
             >
               <LogOut className="w-5 h-5 text-slate-600" />
             </button>
@@ -293,18 +300,17 @@ export default function Home() {
           className="mb-16 text-center"
         >
           <h2 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600 mb-6 font-display">
-            What will you create today?
+            {tHome('heroTitle')}
           </h2>
           <p className="text-lg text-slate-500 mb-10 max-w-2xl mx-auto">
-            Experience the next generation of document editing.
-            Beautiful, fast, and distraction-free.
+            {tHome('heroSubtitle')}
           </p>
 
           <Link href="/editor/new">
             <button className="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full font-medium shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 transform hover:-translate-y-1 transition-all duration-200 overflow-hidden">
               <span className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-out -skew-x-12 origin-left"></span>
               <Plus className="w-5 h-5 mr-2" />
-              Create New Document
+              {tHome('createNew')}
             </button>
           </Link>
         </motion.section>
@@ -314,14 +320,14 @@ export default function Home() {
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
               <Clock className="w-5 h-5 text-slate-400" />
-              {searchQuery ? `Search Results (${filteredDocuments.length})` : `My Documents (${documents.length})`}
+              {searchQuery ? `${t('searchResults')} (${filteredDocuments.length})` : `${t('myDocuments')} (${documents.length})`}
             </h3>
             {documents.length > 0 && (
               <button
                 onClick={loadDocuments}
                 className="text-sm text-indigo-600 font-medium hover:text-indigo-700"
               >
-                Refresh
+                {t('refresh')}
               </button>
             )}
           </div>
@@ -330,16 +336,16 @@ export default function Home() {
             <div className="text-center py-16">
               <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
               <p className="text-slate-500 text-lg mb-2">
-                {searchQuery ? 'No documents found' : 'No documents yet'}
+                {searchQuery ? t('noDocumentsFound') : t('noDocuments')}
               </p>
               <p className="text-slate-400 text-sm mb-6">
-                {searchQuery ? 'Try a different search term' : 'Create your first document to get started'}
+                {searchQuery ? t('searchPrompt') : t('startPrompt')}
               </p>
               {!searchQuery && (
                 <Link href="/editor/new">
                   <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full font-medium shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transform hover:-translate-y-1 transition-all duration-200">
                     <Plus className="w-5 h-5 mr-2" />
-                    Create New Document
+                    {t('create')}
                   </button>
                 </Link>
               )}
@@ -359,7 +365,7 @@ export default function Home() {
                       <div className="h-40 w-full overflow-hidden">
                         <img
                           src={doc.content.imageUrl}
-                          alt={doc.title || 'Document'}
+                          alt={doc.title || tEditor('untitled')}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
@@ -378,7 +384,7 @@ export default function Home() {
                           <button
                             onClick={(e) => handleDeleteDocument(doc.id, e)}
                             className="p-2 hover:bg-red-100 rounded-full transition-colors opacity-0 group-hover:opacity-100 text-red-500"
-                            title="Delete document"
+                            title={t('delete')}
                           >
                             <MoreHorizontal className="w-5 h-5" />
                           </button>
@@ -386,7 +392,7 @@ export default function Home() {
                       </div>
 
                       <h4 className="text-lg font-semibold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2">
-                        {doc.title || 'Untitled Document'}
+                        {doc.title || tEditor('untitled')}
                       </h4>
                       {doc.content?.description && (
                         <p className="text-sm text-slate-500 line-clamp-2 mb-2">

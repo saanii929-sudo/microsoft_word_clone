@@ -1,0 +1,129 @@
+{
+    "Common": {
+        "loading": "Chargement...",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "edit": "Modifier",
+        "create": "Créer",
+        "search": "Rechercher",
+        "settings": "Paramètres",
+        "language": "Langue",
+        "translate": "Traduire",
+        "readAloud": "Lecture à voix haute",
+        "copy": "Copier",
+        "copied": "Copié",
+        "error": "Erreur",
+        "success": "Succès",
+        "refresh": "Actualiser",
+        "signOut": "Déconnexion",
+        "myDocuments": "Mes documents",
+        "searchResults": "Résultats de recherche",
+        "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce document ?",
+        "deleteSuccess": "Document supprimé",
+        "deleteError": "Erreur lors de la suppression du document",
+        "loadError": "Erreur lors du chargement des documents",
+        "noDocuments": "Aucun document pour l'instant",
+        "noDocumentsFound": "Aucun document trouvé",
+        "startPrompt": "Créez votre premier document pour commencer",
+        "searchPrompt": "Essayez un autre terme de recherche"
+    },
+    "Auth": {
+        "welcomeBack": "Bon retour",
+        "createAccount": "Créer un compte",
+        "enterDetails": "Entrez vos coordonnées pour commencer",
+        "fullName": "Nom complet",
+        "email": "Email",
+        "password": "Mot de passe",
+        "signIn": "Se connecter",
+        "signUp": "S'inscrire",
+        "orContinueWith": "Ou continuer avec",
+        "dontHaveAccount": "Vous n'avez pas de compte ?",
+        "alreadyHaveAccount": "Vous avez déjà un compte ?",
+        "demoMode": "Mode démo",
+        "demoModeDesc": "Essayer sans créer de compte"
+    },
+    "DocumentCreation": {
+        "title": "Créer un nouveau document",
+        "subtitle": "Choisissez comment vous voulez commencer",
+        "blankDoc": "Document vierge",
+        "blankDesc": "Commencer à zéro",
+        "aiDoc": "Généré par IA",
+        "aiDesc": "Laissez l'IA vous aider à écrire",
+        "importDoc": "Importer un document",
+        "importDesc": "Télécharger DOCX, PDF, etc.",
+        "docTitle": "Titre du document",
+        "docTitlePlaceholder": "ex: Proposition de projet",
+        "create": "Créer le document",
+        "creating": "Création..."
+    },
+    "Editor": {
+        "newDocument": "Nouveau document",
+        "untitled": "Sans titre",
+        "saving": "Enregistrement...",
+        "saved": "Enregistré",
+        "share": "Partager",
+        "preview": "Aperçu",
+        "aiMedia": "Média IA",
+        "export": "Exporter"
+    },
+    "Sidebar": {
+        "pages": "Pages"
+    },
+    "StatusBar": {
+        "totalWords": "Total des mots :",
+        "currentPage": "Page actuelle :",
+        "page": "Page",
+        "of": "sur",
+        "zoom": "Zoom",
+        "reset": "Réinitialiser"
+    },
+    "LanguageSwitcher": {
+        "selectLanguage": "Choisir la langue"
+    },
+    "Home": {
+        "headerTitle": "Word Studio",
+        "searchPlaceholder": "Rechercher des documents...",
+        "heroTitle": "Que allez-vous créer aujourd'hui ?",
+        "heroSubtitle": "Découvrez la nouvelle génération d'édition de documents. Beau, rapide et sans distraction.",
+        "createNew": "Créer un nouveau document"
+    },
+    "ImmersiveReader": {
+        "title": "Lecteur Immersif",
+        "backToEditor": "Retour à l'éditeur",
+        "tabs": {
+            "textPrefs": "Préf. Texte",
+            "grammarOpts": "Options Grammaire",
+            "readingPrefs": "Préf. Lecture"
+        },
+        "themes": {
+            "light": "Clair",
+            "dark": "Sombre",
+            "sepia": "Sépia",
+            "highContrast": "Contraste Élevé"
+        },
+        "textSize": "Taille du Texte",
+        "font": "Police",
+        "theme": "Thème",
+        "syllables": "Syllabes",
+        "syllablesDesc": "Afficher les césures",
+        "partsOfSpeech": "Parties du Discours",
+        "partsOfSpeechDesc": "Surligner noms, verbes, etc.",
+        "lineFocus": "Focus Ligne",
+        "focus": {
+            "none": "Aucun",
+            "oneLine": "1 Ligne",
+            "threeLines": "3 Lignes",
+            "fiveLines": "5 Lignes"
+        },
+        "selectVoice": "Sélectionner une voix",
+        "loadingVoices": "Chargement des voix...",
+        "magicBackground": "Arrière-plan Magique",
+        "generating": "Génération...",
+        "translateTo": "Traduire vers...",
+        "translate": "Traduire",
+        "translating": "Traduction...",
+        "showingOriginal": "Afficher l'original",
+        "speed": "Vitesse"
+    }
+}
