@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js AI Document Editor
 
-## Getting Started
+A powerful, modern document editor built with **Next.js 16**, designed to provide a Microsoft Word-like experience enhanced with cutting-edge AI capabilities and a superior user interface. This project combines a robust rich text editor (Tiptap) with advanced features like an Immersive Reader, AI media generation, and comprehensive internationalization.
 
-First, run the development server:
+## 🚀 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 📝 Advanced Document Editing
+*   **Rich Text Editor**: Powered by **Tiptap**, supporting advanced tables, images, task lists, code blocks, and more.
+*   **Professional Layout**: Visual page breaks, print layout view, and a feature-rich **Ribbon interface** familiar to Office users.
+*   **Drag & Drop**: Fully draggable and resizable elements including images, tables, and charts with intuitive handles.
+*   **Math & Charts**: Integrated support for KaTeX math equations (`react-katex`) and dynamic charts (`recharts`).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🧠 AI & Smart Features
+*   **AI Media Studio**: Generate images and videos directly within the editor using **Google Gemini** integration.
+*   **Immersive Reader**: A dedicated accessibility mode featuring:
+    *   Text-to-speech with adjustable speed.
+    *   Line focus and picture dictionary.
+    *   Grammar highlighting (Nouns, Verbs, Adjectives).
+*   **Smart Translation**: Seamless translation of UI and content across global languages.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🌍 Internationalization (i18n)
+*   **Multi-language Support**: Full support for English, Arabic (RTL), French, Japanese, Chinese, and German.
+*   **Dynamic Routing**: Built with `next-intl` for localized routing (e.g., `/en/editor`, `/ar/editor`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 💾 File Operations & Cloud
+*   **Import/Export**: extensive support for `.docx` (via `mammoth`/`docx`), `.pdf`, `.md`, and `.txt` files.
+*   **Cloud Storage**: Integrated with **Supabase** for secure document storage and retrieval.
+*   **PDF Handling**: PDF viewing and manipulation using `pdfjs-dist`.
 
-## Learn More
+### 🎨 Modern UI/UX
+*   **Design System**: Built with **Tailwind CSS v4** and **Radix UI** for accessible, stunning components.
+*   **Animations**: Fluid interactions powered by **Framer Motion**.
+*   **Iconography**: Sharp, modern icons from **Lucide React** and **Iconsax**.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+*   **Framework**: Next.js 16 (App Router)
+*   **Language**: TypeScript
+*   **Styling**: Tailwind CSS 4, CSS Variables
+*   **Editor Engine**: Tiptap (Pro extensions & custom plugins)
+*   **Backend/DB**: Supabase
+*   **Utilities**: `date-fns`, `emoji-mart`, `clsx`, `tailwind-merge`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏁 Getting Started
 
-## Deploy on Vercel
+### Prerequisites
+*   Node.js 18.17+ 
+*   npm, yarn, or pnpm
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Installation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1.  **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    cd next-js-example
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    # or
+    pnpm install
+    ```
+
+3.  **Environment Setup**
+    Create a `.env.local` file in the root directory and configure your keys:
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+    ```
+
+4.  **Run the application**
+    ```bash
+    npm run dev
+    ```
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 📂 Project Structure
+
+*   `app/[locale]`: Application routes localized for i18n.
+    *   `/editor`: The main document editing interface.
+    *   `/auth`: Authentication pages.
+*   `components`: Reusable UI components.
+    *   `/ImmersiveReader`: Logic and UI for the immersive reading experience.
+*   `messages`: Translation files (`en.json`, `ar.json`, etc.).
+*   `lib`: Utility functions and API clients.
+*   `hooks`: Custom React hooks for state and logic.
+
+## 🤝 Contributing
+
+Contributions are welcome! This is an active project exploring the future of web-based document editing.
+
+---
+*Built with ❤️ using Next.js and Agentic AI.*
